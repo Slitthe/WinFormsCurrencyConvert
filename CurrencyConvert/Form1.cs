@@ -22,12 +22,12 @@ namespace CurrencyConvert
     public partial class Form1 : Form
     {
         private string _key;
+
         private ApiConstructors _apiConstructors;
 
         private readonly CurrencyData _currencyData = new CurrencyData();
 
         private readonly HttpClient client = new HttpClient();
-
         public Form1()
         {
             InitializeComponent();
@@ -38,7 +38,44 @@ namespace CurrencyConvert
 
             PopulateDataGridViewWithDefaultValues();
 
+
+            //convertFromDropdownInput
+
+            convertFromAmountInput.Maximum = decimal.MaxValue;
+            convertFromAmountInput.Minimum = 0;
+
+            convertToDropdownInput.DataSource = Enum.GetValues(typeof(Currencies));
+            convertFromDropdownInput.DataSource = Enum.GetValues(typeof(Currencies));
+
+            convertFromDropdownInput.SelectedItem = _currencyData.BaseCurrency;
+            convertToDropdownInput.SelectedItem = _currencyData.BaseCurrency;
         }
+
+
+        // EVENTS
+        private void apiKeyValidationButton_Click(object sender, EventArgs e)
+        {
+            CheckApiKey();
+        }
+        private void baseCurrency_SelectionChangeCommitted(object sender, EventArgs e)
+        {
+
+            // 1. change the Base currency both visually and in the program's data
+            // 2. if the currency is different than the previous one, re-fetch the current rates
+            var senderData = (ComboBox) sender;
+            var value = (Currencies)senderData.SelectedValue;
+
+            _currencyData.BaseCurrency = value;
+            currentCurrencyDisplayText.Text = value.ToString();
+        }
+        private void getRatesButton_Click(object sender, EventArgs e)
+        {
+            UpdateRatesValues();
+            // iterate through the data grid view row and get the rates
+            GetAndDisplayRates();
+        }
+
+
 
         private void PopulateDataGridViewWithDefaultValues()
         {
@@ -85,10 +122,6 @@ namespace CurrencyConvert
             currentCurrencySelectDropdown.DataSource = Enum.GetValues(typeof(Currencies));
         }
 
-        private void apiKeyValidationButton_Click(object sender, EventArgs e)
-        {
-            CheckApiKey();
-        }
 
         private async void CheckApiKey()
         {
@@ -112,7 +145,7 @@ namespace CurrencyConvert
         private void InvalidKeyActions()
         {
             apiKeyValidationInfo.ForeColor = Color.DarkRed;
-            apiKeyValidationInfo.Text = "The given key is incorrect.";
+            apiKeyValidationInfo.Text = "";
         }
 
         private void ValidKeyActions(string key)
@@ -140,7 +173,9 @@ namespace CurrencyConvert
 
             ResponseMessageDto deserializedResponse = JsonConvert.DeserializeObject<ResponseMessageDto>(responseString);
 
-            foreach (var rate in deserializedResponse.Rates)
+            var convertedRates = CurrencyCalculator.GetRate(deserializedResponse.Rates, _currencyData.BaseCurrency);
+
+            foreach (var rate in convertedRates)
             {
                 var currentRate = (Currencies)rate.Key;
                 foreach (DataGridViewRow row in ratesDataGridView.Rows)
@@ -168,25 +203,6 @@ namespace CurrencyConvert
             return deserializedProduct.Error == null;
         }
 
-        private void baseCurrency_SelectionChangeCommitted(object sender, EventArgs e)
-        {
-
-            // 1. change the Base currency both visually and in the program's data
-            // 2. if the currency is different than the previous one, re-fetch the current rates
-            var senderData = (ComboBox) sender;
-            var value = (Currencies)senderData.SelectedValue;
-
-            _currencyData.BaseCurrency = value;
-            currentCurrencyDisplayText.Text = value.ToString();
-        }
-
-        private void getRatesButton_Click(object sender, EventArgs e)
-        {
-            UpdateRatesValues();
-            // iterate through the data grid view row and get the rates
-            GetAndDisplayRates();
-        }
-
         private void UpdateRatesValues()
         {
             
@@ -199,6 +215,32 @@ namespace CurrencyConvert
 
                 _currencyData.ConvertCurrencyList[i] = currentRate;
             }
+
+        }
+
+        private async void convertToButton_Click(object sender, EventArgs e)
+        {
+            float convertAmount = (float)convertFromAmountInput.Value;
+            // get rates using the source and target currencies
+            Currencies fromCurrency = (Currencies)convertFromDropdownInput.SelectedValue;
+            // get the source currency
+            Currencies toCurrency = (Currencies) convertToDropdownInput.SelectedValue;
+
+
+            // get the target currency
+            var ratesApi = _apiConstructors.GetGetRatesUrl(new List<Currencies>() {fromCurrency}, toCurrency);
+            
+            HttpResponseMessage responseMessage = await client.GetAsync(ratesApi);
+            HttpStatusCode statusCode = responseMessage.StatusCode;
+            string responseString = await responseMessage.Content.ReadAsStringAsync();
+            ResponseMessageDto deserializedResponse = JsonConvert.DeserializeObject<ResponseMessageDto>(responseString);
+
+            var convertedRates = CurrencyCalculator.GetRate(deserializedResponse.Rates, fromCurrency);
+            // calculate and display the rate
+
+
+            var rate = convertedRates[fromCurrency] / convertedRates[toCurrency];
+            convertResultTextbox.Text = (rate * convertAmount).ToString();
 
         }
     }

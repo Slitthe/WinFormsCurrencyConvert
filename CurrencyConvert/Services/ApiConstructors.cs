@@ -18,12 +18,16 @@ namespace CurrencyConvert.Services
         {
             var baseApi = _baseApi + "latest";
 
-            var symbolsList = currencyList.Select(curr => curr.ToString()).ToArray();
+            var symbolsList = currencyList
+                .Concat(new List<Currencies> {baseCurrency})
+                .Select(curr => curr.ToString())
+                .ToArray();
+
             string symbolsToConvertTo = string.Join(",", symbolsList);
 
             var urlParams = new List<Tuple<string, string>>()
                 {
-                    new Tuple<string, string>("base", baseCurrency.ToString()),
+                    new Tuple<string, string>("base", Currencies.EUR.ToString()),
                     new Tuple<string, string>("symbols", symbolsToConvertTo)
                 };
             return AddUrlParameters(urlParams, baseApi);
