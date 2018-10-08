@@ -22,13 +22,13 @@ namespace CurrencyConvert
 
     public partial class Form1 : Form
     {
-        private ApiConstructors _apiConstructors;
+        private ApiUrlConstructors _apiUrlConstructors;
         private readonly CurrencyData _currencyData = new CurrencyData();
 
         public Form1()
         {
             InitializeComponent();
-
+            
             CurrentCurrencyInitialize();
 
             DataGridDefine();
@@ -37,7 +37,7 @@ namespace CurrencyConvert
             ToAndFromConvertInitialize();
         }
 
-        // INITIALIZERS
+
         private void CurrentCurrencyInitialize()
         {
 
@@ -49,7 +49,6 @@ namespace CurrencyConvert
             currentCurrencySelectDropdown.DropDownStyle = ComboBoxStyle.DropDownList;
             currentCurrencyDisplayText.Text = _currencyData.CodeEnumToLongName(_currencyData.BaseCurrency);
         }
-
         private void DataGridDefine()
         {
             var currencyCol = new DataGridViewComboBoxColumn()
@@ -114,18 +113,11 @@ namespace CurrencyConvert
         }
         private void baseCurrency_SelectionChangeCommitted(object sender, EventArgs e)
         {
-
-            // 1. change the Base currency both visually and in the program's data
-            // 2. if the currency is different than the previous one, re-fetch the current rates
             var senderData = (ComboBox) sender;
-
-            var value = (Currencies) this._currencyData.NameToCode[senderData.SelectedValue.ToString()];
-
-            //var value = (Currencies)senderData.SelectedValue;
-
+            Currencies value = (Currencies) this._currencyData.NameToCode[senderData.SelectedValue.ToString()];
+            
             _currencyData.BaseCurrency = value;
             currentCurrencyDisplayText.Text = _currencyData.CodeEnumToLongName(_currencyData.BaseCurrency);
-            //currentCurrencyDisplayText.Text = value.ToString();
         }
         private void getRatesButton_Click(object sender, EventArgs e)
         {
@@ -146,7 +138,7 @@ namespace CurrencyConvert
             
 
             
-            string ratesUrl = _apiConstructors.GetGetRatesUrl(new List<Currencies>() {fromCurrency}, toCurrency);
+            string ratesUrl = _apiUrlConstructors.GetGetRatesUrl(new List<Currencies>() {fromCurrency}, toCurrency);
             ResponseMessageDto responseMessage = await DataRequestService.RequestData(ratesUrl);
 
             if (responseMessage != null)
@@ -159,6 +151,12 @@ namespace CurrencyConvert
 
         }
 
+        private void swichCurrenciesConvertButton_Click(object sender, EventArgs e)
+        {
+            var convertFromCurrencyValue = convertFromDropdownInput.SelectedValue;
+            convertFromDropdownInput.SelectedItem = convertToDropdownInput.SelectedItem;
+            convertToDropdownInput.SelectedItem = convertFromCurrencyValue;
+        }
 
 
         private async void CheckApiKey()
@@ -186,7 +184,7 @@ namespace CurrencyConvert
         }
         private void ValidKeyActions(string key)
         {
-            _apiConstructors = new ApiConstructors(key);
+            _apiUrlConstructors = new ApiUrlConstructors(key);
             apiKeyValidationInfo.ForeColor = Color.Black;
             apiKeyValidationInfo.Text = "";
 
@@ -202,7 +200,7 @@ namespace CurrencyConvert
 
         private async void GetAndDisplayRates()
         {
-            string ratesUrl = _apiConstructors.GetGetRatesUrl(_currencyData.ConvertCurrencyList, _currencyData.BaseCurrency);
+            string ratesUrl = _apiUrlConstructors.GetGetRatesUrl(_currencyData.ConvertCurrencyList, _currencyData.BaseCurrency);
 
             ResponseMessageDto responseData = await DataRequestService.RequestData(ratesUrl);
 
@@ -214,7 +212,6 @@ namespace CurrencyConvert
             }
 
         }
-
         private void DisplayRatesInGridView(Dictionary<Currencies, float> convertedRates)
         {
             foreach (var rate in convertedRates)
@@ -231,7 +228,6 @@ namespace CurrencyConvert
                 }
             }
         }
-
         private void UpdateRatesValues()
         {
             var rows = ratesDataGridView.Rows;
@@ -246,13 +242,7 @@ namespace CurrencyConvert
 
         }
 
-        private void swichCurrenciesConvertButton_Click(object sender, EventArgs e)
-        {
-            var convertFromCurrencyValue = convertFromDropdownInput.SelectedValue;
-            convertFromDropdownInput.SelectedItem = convertToDropdownInput.SelectedItem;
-            convertToDropdownInput.SelectedItem = convertFromCurrencyValue;
 
-        }
 
     }
 }

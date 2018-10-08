@@ -7,23 +7,23 @@ using CurrencyConvert.Enums;
 
 namespace CurrencyConvert.Services
 {
-    class ApiConstructors
+    class ApiUrlConstructors
     {
-        public ApiConstructors(string apiKey)
+        public ApiUrlConstructors(string apiKey)
         {
             _apiKey = apiKey;
         }
 
         public string GetGetRatesUrl(IEnumerable<Currencies> currencyList, Currencies baseCurrency)
         {
-            var baseApi = _baseApi + "latest";
+            var baseApi = BaseApi + "latest";
 
-            var symbolsList = currencyList
+            var currencySymbols = currencyList
                 .Concat(new List<Currencies> {baseCurrency})
-                .Select(curr => curr.ToString())
+                .Select(currencySymbol => currencySymbol.ToString())
                 .ToArray();
 
-            string symbolsToConvertTo = string.Join(",", symbolsList);
+            string symbolsToConvertTo = string.Join(",", currencySymbols);
 
             var urlParams = new List<Tuple<string, string>>()
                 {
@@ -53,7 +53,7 @@ namespace CurrencyConvert.Services
         }
 
         private readonly string _apiKey;
-        private const string _baseApi = "http://data.fixer.io/api/";
+        private const string BaseApi = "http://data.fixer.io/api/";
         
     }
 }

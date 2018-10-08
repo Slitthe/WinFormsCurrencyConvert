@@ -59,15 +59,16 @@
             // 
             // apiKeyValidationInput
             // 
-            this.apiKeyValidationInput.Location = new System.Drawing.Point(85, 11);
+            this.apiKeyValidationInput.Location = new System.Drawing.Point(85, 8);
+            this.apiKeyValidationInput.Margin = new System.Windows.Forms.Padding(0, 0, 0, 0);
             this.apiKeyValidationInput.MinimumSize = new System.Drawing.Size(4, 23);
             this.apiKeyValidationInput.Name = "apiKeyValidationInput";
-            this.apiKeyValidationInput.Size = new System.Drawing.Size(154, 20);
+            this.apiKeyValidationInput.Size = new System.Drawing.Size(154, 23);
             this.apiKeyValidationInput.TabIndex = 0;
             // 
             // apiKeyValidationLabel
             // 
-            this.apiKeyValidationLabel.Location = new System.Drawing.Point(12, 9);
+            this.apiKeyValidationLabel.Location = new System.Drawing.Point(12, 6);
             this.apiKeyValidationLabel.Name = "apiKeyValidationLabel";
             this.apiKeyValidationLabel.Size = new System.Drawing.Size(67, 23);
             this.apiKeyValidationLabel.TabIndex = 1;
@@ -76,7 +77,8 @@
             // 
             // apiKeyValidationButton
             // 
-            this.apiKeyValidationButton.Location = new System.Drawing.Point(245, 11);
+            this.apiKeyValidationButton.Location = new System.Drawing.Point(245, 8);
+            this.apiKeyValidationButton.Margin = new System.Windows.Forms.Padding(0, 0, 0, 0);
             this.apiKeyValidationButton.Name = "apiKeyValidationButton";
             this.apiKeyValidationButton.Size = new System.Drawing.Size(98, 23);
             this.apiKeyValidationButton.TabIndex = 2;
@@ -94,8 +96,7 @@
             // 
             // controlsPanel
             // 
-            this.controlsPanel.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
+            this.controlsPanel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.controlsPanel.Controls.Add(this.panel1);
             this.controlsPanel.Controls.Add(this.getRatesButton);
@@ -104,9 +105,9 @@
             this.controlsPanel.Controls.Add(this.currentCurrencyDisplayLabel);
             this.controlsPanel.Controls.Add(this.currentCurrencySelectLabel);
             this.controlsPanel.Controls.Add(this.currentCurrencySelectDropdown);
-            this.controlsPanel.Location = new System.Drawing.Point(15, 58);
+            this.controlsPanel.Location = new System.Drawing.Point(15, 57);
             this.controlsPanel.Name = "controlsPanel";
-            this.controlsPanel.Size = new System.Drawing.Size(462, 589);
+            this.controlsPanel.Size = new System.Drawing.Size(462, 404);
             this.controlsPanel.TabIndex = 4;
             this.controlsPanel.Visible = false;
             // 
@@ -125,9 +126,9 @@
             this.panel1.Controls.Add(this.convertFromDropdownLabel);
             this.panel1.Controls.Add(this.convertFromDropdownInput);
             this.panel1.Controls.Add(this.convertFromAmountLabel);
-            this.panel1.Location = new System.Drawing.Point(3, 201);
+            this.panel1.Location = new System.Drawing.Point(8, 259);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(448, 385);
+            this.panel1.Size = new System.Drawing.Size(448, 142);
             this.panel1.TabIndex = 15;
             // 
             // swichCurrenciesConvertButton
@@ -300,16 +301,17 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(489, 659);
+            this.ClientSize = new System.Drawing.Size(489, 473);
             this.Controls.Add(this.controlsPanel);
             this.Controls.Add(this.apiKeyValidationInfo);
             this.Controls.Add(this.apiKeyValidationButton);
             this.Controls.Add(this.apiKeyValidationLabel);
             this.Controls.Add(this.apiKeyValidationInput);
-            this.MaximumSize = new System.Drawing.Size(505, 698);
-            this.MinimumSize = new System.Drawing.Size(505, 698);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
+            this.MaximumSize = new System.Drawing.Size(505, 512);
+            this.MinimumSize = new System.Drawing.Size(505, 512);
             this.Name = "Form1";
-            this.Text = "Form1";
+            this.Text = "Currency Convert";
             this.controlsPanel.ResumeLayout(false);
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();

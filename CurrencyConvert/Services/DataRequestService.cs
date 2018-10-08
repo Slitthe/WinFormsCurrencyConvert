@@ -5,6 +5,7 @@ using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 using CurrencyConvert.Models;
 using Newtonsoft.Json;
 
@@ -12,7 +13,7 @@ namespace CurrencyConvert.Services
 {
     public static class DataRequestService
     {
-        private static readonly HttpClient client = new HttpClient();
+        private static readonly HttpClient Client = new HttpClient();
 
         public static async Task<bool> CheckKey(string apiKey)
         {
@@ -25,11 +26,12 @@ namespace CurrencyConvert.Services
 
         public static async Task<ResponseMessageDto> RequestData(string url)
         {
+            Cursor.Current = Cursors.WaitCursor;
             ResponseMessageDto deserializedResponse;
             try
             {
                 HttpResponseMessage responseMessage =
-                    await client.GetAsync(url);
+                    await Client.GetAsync(url);
 
                 HttpStatusCode statusCode = responseMessage.StatusCode;
 
@@ -42,6 +44,7 @@ namespace CurrencyConvert.Services
                 deserializedResponse = null;
             }
 
+            Cursor.Current = Cursors.Default;
             return deserializedResponse;
         }
     }
