@@ -56,13 +56,14 @@
     <Compile Include="Form1.Designer.cs">
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
-    <Compile Include="Models\CurrencyData.cs" />
+    <Compile Include="Data\CurrencyData.cs" />
     <Compile Include="Models\ErrorStatusCode.cs" />
     <Compile Include="Models\ResponseMessageDto.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\ApiConstructors.cs" />
     <Compile Include="Services\CurrencyCalculator.cs" />
+    <Compile Include="Services\DataRequestService.cs" />
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>
     </EmbeddedResource>
@@ -75,7 +76,6 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <None Include="Data\currencyKeyValuePairs.json" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>

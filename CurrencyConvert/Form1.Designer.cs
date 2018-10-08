@@ -34,6 +34,7 @@
             this.apiKeyValidationInfo = new System.Windows.Forms.Label();
             this.controlsPanel = new System.Windows.Forms.Panel();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.swichCurrenciesConvertButton = new System.Windows.Forms.Button();
             this.convertToButton = new System.Windows.Forms.Button();
             this.convertFromAmountInput = new System.Windows.Forms.NumericUpDown();
             this.convertToDropdownLabel = new System.Windows.Forms.Label();
@@ -113,6 +114,7 @@
             // 
             this.panel1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.panel1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.panel1.Controls.Add(this.swichCurrenciesConvertButton);
             this.panel1.Controls.Add(this.convertToButton);
             this.panel1.Controls.Add(this.convertFromAmountInput);
             this.panel1.Controls.Add(this.convertToDropdownLabel);
@@ -127,6 +129,16 @@
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(448, 385);
             this.panel1.TabIndex = 15;
+            // 
+            // swichCurrenciesConvertButton
+            // 
+            this.swichCurrenciesConvertButton.Location = new System.Drawing.Point(234, 5);
+            this.swichCurrenciesConvertButton.Name = "swichCurrenciesConvertButton";
+            this.swichCurrenciesConvertButton.Size = new System.Drawing.Size(83, 24);
+            this.swichCurrenciesConvertButton.TabIndex = 20;
+            this.swichCurrenciesConvertButton.Text = "Switch";
+            this.swichCurrenciesConvertButton.UseVisualStyleBackColor = true;
+            this.swichCurrenciesConvertButton.Click += new System.EventHandler(this.swichCurrenciesConvertButton_Click);
             // 
             // convertToButton
             // 
@@ -161,6 +173,7 @@
             // 
             // convertToDropdownInput
             // 
+            this.convertToDropdownInput.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.convertToDropdownInput.FormattingEnabled = true;
             this.convertToDropdownInput.Location = new System.Drawing.Point(169, 51);
             this.convertToDropdownInput.Name = "convertToDropdownInput";
@@ -193,7 +206,7 @@
             this.currencyConvertContainerLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.currencyConvertContainerLabel.Location = new System.Drawing.Point(3, 6);
             this.currencyConvertContainerLabel.Name = "currencyConvertContainerLabel";
-            this.currencyConvertContainerLabel.Size = new System.Drawing.Size(313, 23);
+            this.currencyConvertContainerLabel.Size = new System.Drawing.Size(225, 23);
             this.currencyConvertContainerLabel.TabIndex = 14;
             this.currencyConvertContainerLabel.Text = "Currency Convertor";
             // 
@@ -208,6 +221,7 @@
             // 
             // convertFromDropdownInput
             // 
+            this.convertFromDropdownInput.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.convertFromDropdownInput.FormattingEnabled = true;
             this.convertFromDropdownInput.Location = new System.Drawing.Point(6, 51);
             this.convertFromDropdownInput.Name = "convertFromDropdownInput";
@@ -225,7 +239,7 @@
             // 
             // getRatesButton
             // 
-            this.getRatesButton.Location = new System.Drawing.Point(216, 163);
+            this.getRatesButton.Location = new System.Drawing.Point(343, 163);
             this.getRatesButton.Name = "getRatesButton";
             this.getRatesButton.Size = new System.Drawing.Size(104, 32);
             this.getRatesButton.TabIndex = 5;
@@ -242,7 +256,7 @@
             this.ratesDataGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.ratesDataGridView.Location = new System.Drawing.Point(8, 54);
             this.ratesDataGridView.Name = "ratesDataGridView";
-            this.ratesDataGridView.Size = new System.Drawing.Size(312, 103);
+            this.ratesDataGridView.Size = new System.Drawing.Size(439, 103);
             this.ratesDataGridView.TabIndex = 4;
             // 
             // currentCurrencyDisplayText
@@ -250,7 +264,7 @@
             this.currentCurrencyDisplayText.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.currentCurrencyDisplayText.Location = new System.Drawing.Point(103, 30);
             this.currentCurrencyDisplayText.Name = "currentCurrencyDisplayText";
-            this.currentCurrencyDisplayText.Size = new System.Drawing.Size(59, 21);
+            this.currentCurrencyDisplayText.Size = new System.Drawing.Size(217, 21);
             this.currentCurrencyDisplayText.TabIndex = 3;
             this.currentCurrencyDisplayText.Text = "EUR";
             this.currentCurrencyDisplayText.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -278,7 +292,7 @@
             this.currentCurrencySelectDropdown.FormattingEnabled = true;
             this.currentCurrencySelectDropdown.Location = new System.Drawing.Point(103, 6);
             this.currentCurrencySelectDropdown.Name = "currentCurrencySelectDropdown";
-            this.currentCurrencySelectDropdown.Size = new System.Drawing.Size(121, 21);
+            this.currentCurrencySelectDropdown.Size = new System.Drawing.Size(217, 21);
             this.currentCurrencySelectDropdown.TabIndex = 0;
             this.currentCurrencySelectDropdown.SelectionChangeCommitted += new System.EventHandler(this.baseCurrency_SelectionChangeCommitted);
             // 
@@ -292,6 +306,7 @@
             this.Controls.Add(this.apiKeyValidationButton);
             this.Controls.Add(this.apiKeyValidationLabel);
             this.Controls.Add(this.apiKeyValidationInput);
+            this.MaximumSize = new System.Drawing.Size(505, 698);
             this.MinimumSize = new System.Drawing.Size(505, 698);
             this.Name = "Form1";
             this.Text = "Form1";
@@ -329,6 +344,7 @@
         private System.Windows.Forms.TextBox convertResultTextbox;
         private System.Windows.Forms.NumericUpDown convertFromAmountInput;
         private System.Windows.Forms.Button convertToButton;
+        private System.Windows.Forms.Button swichCurrenciesConvertButton;
     }
 }
 

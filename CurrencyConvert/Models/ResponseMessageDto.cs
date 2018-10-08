@@ -7,7 +7,7 @@ using CurrencyConvert.Enums;
 
 namespace CurrencyConvert.Models
 {
-    class ResponseMessageDto
+    public class ResponseMessageDto
     {
         public bool Success { get; set; }
         public ErrorStatusCode Error { get; set; }
