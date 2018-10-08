@@ -11,7 +11,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using CurrencyConvert.Data;
-using CurrencyConvert.Enums;
 using CurrencyConvert.Models;
 using CurrencyConvert.Services;
 using Newtonsoft.Json;
@@ -29,20 +28,16 @@ namespace CurrencyConvert
         {
             InitializeComponent();
             
-            CurrentCurrencyInitialize();
 
-            DataGridDefine();
-            DataGridPopulate();
-            
-            ToAndFromConvertInitialize();
         }
 
 
         private void CurrentCurrencyInitialize()
         {
-
-            _currencyData.BaseCurrency = Currencies.EUR;
-            _currencyData.ConvertCurrencyList = new Currencies[3] { Currencies.USD, Currencies.GBP, Currencies.RON };
+            // TODO
+            // check for the existance of the defualt currencies in the currency list, if they do not exist just pick the first currencies to be the default ones
+            _currencyData.BaseCurrency = "EUR";
+            _currencyData.ConvertCurrencyList = new string[3] { "USD", "GBP", "RON"};
 
             currentCurrencySelectDropdown.DataSource = _currencyData.NameToCode.Keys.ToList();
             currentCurrencySelectDropdown.SelectedItem = _currencyData.CodeEnumToLongName(_currencyData.BaseCurrency);
@@ -85,8 +80,8 @@ namespace CurrencyConvert
             convertFromAmountInput.Maximum = decimal.MaxValue;
             convertFromAmountInput.Minimum = 0;
 
-            convertFromDropdownInput.SelectedItem = _currencyData.CodeEnumToLongName(_currencyData.BaseCurrency);
             convertFromDropdownInput.DataSource = _currencyData.NameToCode.Keys.ToList();
+            convertFromDropdownInput.SelectedItem = _currencyData.CodeEnumToLongName(_currencyData.BaseCurrency);
             convertFromDropdownInput.DropDownStyle = ComboBoxStyle.DropDownList;
 
             convertToDropdownInput.DataSource = _currencyData.NameToCode.Keys.ToList();
@@ -114,7 +109,7 @@ namespace CurrencyConvert
         private void baseCurrency_SelectionChangeCommitted(object sender, EventArgs e)
         {
             var senderData = (ComboBox) sender;
-            Currencies value = (Currencies) this._currencyData.NameToCode[senderData.SelectedValue.ToString()];
+            string value = (string) this._currencyData.NameToCode[senderData.SelectedValue.ToString()];
             
             _currencyData.BaseCurrency = value;
             currentCurrencyDisplayText.Text = _currencyData.CodeEnumToLongName(_currencyData.BaseCurrency);
@@ -130,15 +125,15 @@ namespace CurrencyConvert
             float convertAmount = (float) convertFromAmountInput.Value;
 
             
-            Currencies toCurrency =
-                (Currencies) _currencyData.NameToCode[convertToDropdownInput.SelectedValue.ToString()];
-            Currencies fromCurrency =
-                (Currencies) _currencyData.NameToCode[convertFromDropdownInput.SelectedValue.ToString()];
+            string toCurrency =
+                (string) _currencyData.NameToCode[convertToDropdownInput.SelectedValue.ToString()];
+            string fromCurrency =
+                (string) _currencyData.NameToCode[convertFromDropdownInput.SelectedValue.ToString()];
 
             
 
             
-            string ratesUrl = _apiUrlConstructors.GetGetRatesUrl(new List<Currencies>() {fromCurrency}, toCurrency);
+            string ratesUrl = _apiUrlConstructors.GetGetRatesUrl(new List<string>() {fromCurrency}, toCurrency);
             ResponseMessageDto responseMessage = await DataRequestService.RequestData(ratesUrl);
 
             if (responseMessage != null)
@@ -164,11 +159,11 @@ namespace CurrencyConvert
             Cursor.Current = Cursors.WaitCursor;
 
             var key = apiKeyValidationInput.Text;
-            var isKeyValid = await DataRequestService.CheckKey(key);
+            ResponseMessageDto symbolsData = await DataRequestService.GetTypesDataList(key);
 
-            if (isKeyValid)
+            if (symbolsData != null)
             {
-                ValidKeyActions(key);
+                ValidKeyActions(key, symbolsData);
             }
             else
             {
@@ -182,8 +177,23 @@ namespace CurrencyConvert
             apiKeyValidationInfo.ForeColor = Color.DarkRed;
             apiKeyValidationInfo.Text = "Invalid key, try again.";
         }
-        private void ValidKeyActions(string key)
+        private void ValidKeyActions(string key, ResponseMessageDto typesData)
         {
+            // populate the data with the symbols data instead of just using the hardcoded one
+            // 
+            foreach (var symbolItem in typesData.Symbols)
+            {
+                _currencyData.NameToCode.Add(symbolItem.Value, symbolItem.Key);
+                _currencyData.CurrencyList.Add(symbolItem.Key);
+            }
+
+            CurrentCurrencyInitialize();
+
+            DataGridDefine();
+            DataGridPopulate();
+
+            ToAndFromConvertInitialize();
+
             _apiUrlConstructors = new ApiUrlConstructors(key);
             apiKeyValidationInfo.ForeColor = Color.Black;
             apiKeyValidationInfo.Text = "";
@@ -212,15 +222,15 @@ namespace CurrencyConvert
             }
 
         }
-        private void DisplayRatesInGridView(Dictionary<Currencies, float> convertedRates)
+        private void DisplayRatesInGridView(Dictionary<string, float> convertedRates)
         {
             foreach (var rate in convertedRates)
             {
-                var currentRate = (Currencies)rate.Key;
+                var currentRate = (string)rate.Key;
                 foreach (DataGridViewRow row in ratesDataGridView.Rows)
                 {
 
-                    var currenctCellCurrency = (Currencies)_currencyData.NameToCode[row.Cells[0].Value.ToString()];
+                    var currenctCellCurrency = (string)_currencyData.NameToCode[row.Cells[0].Value.ToString()];
                     if (currenctCellCurrency == currentRate)
                     {
                         row.Cells[1].Value = rate.Value;
@@ -235,7 +245,7 @@ namespace CurrencyConvert
             for (int i = 0; i < rows.Count; i++)
             {
                 DataGridViewRow currentRow = rows[i];
-                Currencies currentRate = (Currencies) _currencyData.NameToCode[currentRow.Cells[0].Value.ToString()];
+                string currentRate = (string) _currencyData.NameToCode[currentRow.Cells[0].Value.ToString()];
 
                 _currencyData.ConvertCurrencyList[i] = currentRate;
             }

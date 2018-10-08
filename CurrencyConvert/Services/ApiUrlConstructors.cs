@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using CurrencyConvert.Enums;
 
 namespace CurrencyConvert.Services
 {
@@ -14,12 +13,12 @@ namespace CurrencyConvert.Services
             _apiKey = apiKey;
         }
 
-        public string GetGetRatesUrl(IEnumerable<Currencies> currencyList, Currencies baseCurrency)
+        public string GetGetRatesUrl(IEnumerable<string> currencyList, string baseCurrency)
         {
             var baseApi = BaseApi + "latest";
 
             var currencySymbols = currencyList
-                .Concat(new List<Currencies> {baseCurrency})
+                .Concat(new List<string> {baseCurrency})
                 .Select(currencySymbol => currencySymbol.ToString())
                 .ToArray();
 
@@ -27,7 +26,7 @@ namespace CurrencyConvert.Services
 
             var urlParams = new List<Tuple<string, string>>()
                 {
-                    new Tuple<string, string>("base", Currencies.EUR.ToString()),
+                    new Tuple<string, string>("base", "EUR"),
                     new Tuple<string, string>("symbols", symbolsToConvertTo)
                 };
             return AddUrlParameters(urlParams, baseApi);
