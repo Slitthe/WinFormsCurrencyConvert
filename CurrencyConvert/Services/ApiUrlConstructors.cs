@@ -26,13 +26,11 @@ namespace CurrencyConvert.Services
 
             var urlParams = new List<Tuple<string, string>>()
                 {
-                    new Tuple<string, string>("base", "EUR"),
                     new Tuple<string, string>("symbols", symbolsToConvertTo)
                 };
             return AddUrlParameters(urlParams, baseApi);
         }
 
-        // need to add an url to get the one currency to another convert rate
 
         private string AddUrlParameters(IEnumerable<Tuple<string, string>> urlParams, string url)
         {

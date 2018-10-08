@@ -31,18 +31,35 @@ namespace CurrencyConvert
 
         }
 
-
+        #region DATA INTIALIZATION
         private void CurrentCurrencyInitialize()
         {
-            // TODO
-            // check for the existance of the defualt currencies in the currency list, if they do not exist just pick the first currencies to be the default ones
-            _currencyData.BaseCurrency = "EUR";
-            _currencyData.ConvertCurrencyList = new string[3] { "USD", "GBP", "RON"};
+            SetCurrenciesDefaultOrExistingValues();
 
             currentCurrencySelectDropdown.DataSource = _currencyData.NameToCode.Keys.ToList();
             currentCurrencySelectDropdown.SelectedItem = _currencyData.CodeEnumToLongName(_currencyData.BaseCurrency);
             currentCurrencySelectDropdown.DropDownStyle = ComboBoxStyle.DropDownList;
             currentCurrencyDisplayText.Text = _currencyData.CodeEnumToLongName(_currencyData.BaseCurrency);
+        }
+        private void SetCurrenciesDefaultOrExistingValues()
+        {
+            _currencyData.BaseCurrency = _currencyData.NameToCode.ContainsValue("EUR") ? "EUR" : _currencyData.NameToCode.Values.First();
+
+            string[] defualtCurrenciesConvertList = new string[3] { "USD", "GBP", "RON" };
+            bool allCurrenciesExist = true;
+
+            foreach (var defaultCurrency in defualtCurrenciesConvertList)
+            {
+                if (!_currencyData.NameToCode.ContainsValue(defaultCurrency))
+                {
+                    allCurrenciesExist = false;
+                }
+            }
+
+            for (int i = 0; i < defualtCurrenciesConvertList.Length; i++)
+            {
+                _currencyData.ConvertCurrencyList[i] = allCurrenciesExist ? defualtCurrenciesConvertList[i] : _currencyData.NameToCode.Values.Skip(i).Take(1).Single();
+            }
         }
         private void DataGridDefine()
         {
@@ -53,7 +70,7 @@ namespace CurrencyConvert
                 ReadOnly = false,
                 ValueType = typeof(string),
                 DataSource = _currencyData.NameToCode.Keys.ToList()
-                
+
             };
             var currencyRate = new DataGridViewTextBoxColumn
             {
@@ -88,20 +105,27 @@ namespace CurrencyConvert
             convertToDropdownInput.SelectedItem = _currencyData.CodeEnumToLongName(_currencyData.BaseCurrency);
             convertToDropdownInput.DropDownStyle = ComboBoxStyle.DropDownList;
         }
+        private void DataInitialization(ResponseMessageDto typesData)
+        {
+            foreach (var symbolItem in typesData.Symbols)
+            {
+                _currencyData.NameToCode.Add(symbolItem.Value, symbolItem.Key);
+                _currencyData.CurrencyList.Add(symbolItem.Key);
+            }
+
+            CurrentCurrencyInitialize();
+
+            DataGridDefine();
+            DataGridPopulate();
+
+            ToAndFromConvertInitialize();
+        }
 
 
+        #endregion
 
 
-
-
-
-
-
-
-
-
-
-        // EVENTS
+        #region EVENTS
         private void apiKeyValidationButton_Click(object sender, EventArgs e)
         {
             CheckApiKey();
@@ -119,7 +143,6 @@ namespace CurrencyConvert
             UpdateRatesValues();
             GetAndDisplayRates();
         }
-
         private async void convertToButton_Click(object sender, EventArgs e)
         {
             float convertAmount = (float) convertFromAmountInput.Value;
@@ -145,15 +168,16 @@ namespace CurrencyConvert
             }
 
         }
-
         private void swichCurrenciesConvertButton_Click(object sender, EventArgs e)
         {
             var convertFromCurrencyValue = convertFromDropdownInput.SelectedValue;
             convertFromDropdownInput.SelectedItem = convertToDropdownInput.SelectedItem;
             convertToDropdownInput.SelectedItem = convertFromCurrencyValue;
         }
+        #endregion
 
 
+        #region Action methods
         private async void CheckApiKey()
         {
             Cursor.Current = Cursors.WaitCursor;
@@ -179,20 +203,7 @@ namespace CurrencyConvert
         }
         private void ValidKeyActions(string key, ResponseMessageDto typesData)
         {
-            // populate the data with the symbols data instead of just using the hardcoded one
-            // 
-            foreach (var symbolItem in typesData.Symbols)
-            {
-                _currencyData.NameToCode.Add(symbolItem.Value, symbolItem.Key);
-                _currencyData.CurrencyList.Add(symbolItem.Key);
-            }
-
-            CurrentCurrencyInitialize();
-
-            DataGridDefine();
-            DataGridPopulate();
-
-            ToAndFromConvertInitialize();
+            DataInitialization(typesData);
 
             _apiUrlConstructors = new ApiUrlConstructors(key);
             apiKeyValidationInfo.ForeColor = Color.Black;
@@ -202,12 +213,6 @@ namespace CurrencyConvert
             apiKeyValidationInput.ReadOnly = true;
             controlsPanel.Visible = true;
         }
-
-
-
-
-
-
         private async void GetAndDisplayRates()
         {
             string ratesUrl = _apiUrlConstructors.GetGetRatesUrl(_currencyData.ConvertCurrencyList, _currencyData.BaseCurrency);
@@ -245,13 +250,13 @@ namespace CurrencyConvert
             for (int i = 0; i < rows.Count; i++)
             {
                 DataGridViewRow currentRow = rows[i];
-                string currentRate = (string) _currencyData.NameToCode[currentRow.Cells[0].Value.ToString()];
+                string currentRate = (string)_currencyData.NameToCode[currentRow.Cells[0].Value.ToString()];
 
                 _currencyData.ConvertCurrencyList[i] = currentRate;
             }
 
         }
-
+        #endregion
 
 
     }

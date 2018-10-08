@@ -21,8 +21,12 @@ namespace CurrencyConvert.Services
 
             ResponseMessageDto checkKeyUrlRequest = await RequestData(checkKeyUrl);
 
-            // check if response is True then return the data else just return null
-            return checkKeyUrlRequest.Success ? checkKeyUrlRequest : null;
+            if (checkKeyUrlRequest == null || !checkKeyUrlRequest.Success)
+            {
+                return null;
+            }
+
+            return checkKeyUrlRequest;
         }
 
         public static async Task<ResponseMessageDto> RequestData(string url)
@@ -31,11 +35,7 @@ namespace CurrencyConvert.Services
             ResponseMessageDto deserializedResponse;
             try
             {
-                HttpResponseMessage responseMessage =
-                    await Client.GetAsync(url);
-
-                HttpStatusCode statusCode = responseMessage.StatusCode;
-
+                HttpResponseMessage responseMessage = await Client.GetAsync(url);
                 string responseString = await responseMessage.Content.ReadAsStringAsync();
 
                 deserializedResponse = JsonConvert.DeserializeObject<ResponseMessageDto>(responseString);
