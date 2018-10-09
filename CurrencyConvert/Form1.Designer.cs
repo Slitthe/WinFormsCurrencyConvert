@@ -139,7 +139,7 @@
             this.swichCurrenciesConvertButton.TabIndex = 20;
             this.swichCurrenciesConvertButton.Text = "Switch";
             this.swichCurrenciesConvertButton.UseVisualStyleBackColor = true;
-            this.swichCurrenciesConvertButton.Click += new System.EventHandler(this.swichCurrenciesConvertButton_Click);
+            this.swichCurrenciesConvertButton.Click += new System.EventHandler(this.switchCurrenciesConvertButton_Click);
             // 
             // convertToButton
             // 

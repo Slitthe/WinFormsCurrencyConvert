@@ -8,6 +8,11 @@ namespace CurrencyConvert.Services
 {
     class ApiUrlConstructors
     {
+        private const string BaseApi = "http://data.fixer.io/api/";
+        private const string KeyParamName = "access_key";
+
+        private readonly string _apiKey;
+
         public ApiUrlConstructors(string apiKey)
         {
             _apiKey = apiKey;
@@ -36,7 +41,7 @@ namespace CurrencyConvert.Services
         {
             var paramsAsKeyValuePairs = new List<string>()
             {
-                $"access_key={_apiKey}"
+                $"{KeyParamName}={_apiKey}"
             };
 
             foreach (var urlParam in urlParams)
@@ -49,8 +54,8 @@ namespace CurrencyConvert.Services
             return urlWithParams;
         }
 
-        private readonly string _apiKey;
-        private const string BaseApi = "http://data.fixer.io/api/";
-        
+
+
+
     }
 }

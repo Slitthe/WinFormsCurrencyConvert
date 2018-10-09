@@ -10,9 +10,9 @@ namespace CurrencyConvert.Data
     class CurrencyData
     {
         public readonly List<string> CurrencyList;
-        public string BaseCurrency { get; set; }
         public readonly Dictionary<string, string> NameToCode;
-        public string[] ConvertCurrencyList { get; set; }
+        public string BaseCurrency { get; set; }
+        public string[] ConvertCurrencyList { get; private set; }
 
         public CurrencyData()
         {
@@ -21,10 +21,6 @@ namespace CurrencyConvert.Data
             NameToCode = new Dictionary<string, string>();
         }
 
-        public string CodeEnumToLongName(string code)
-        {
-            return NameToCode.Single(item => item.Value == code).Key;
-        }
-
+        public string CodeEnumToLongName(string code) => NameToCode.Single(item => item.Value == code).Key;
     }
 }

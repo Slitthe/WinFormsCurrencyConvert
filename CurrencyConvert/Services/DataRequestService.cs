@@ -15,11 +15,11 @@ namespace CurrencyConvert.Services
     {
         private static readonly HttpClient Client = new HttpClient();
 
-        public static async Task<ResponseMessageDto> GetTypesDataList(string apiKey)
+        public static async Task<ResponseMessageDto> GetTypesDataListAsync(string apiKey)
         {
             string checkKeyUrl = "http://data.fixer.io/api/symbols?access_key=" + apiKey;
 
-            ResponseMessageDto checkKeyUrlRequest = await RequestData(checkKeyUrl);
+            ResponseMessageDto checkKeyUrlRequest = await RequestDataAsync(checkKeyUrl);
 
             if (checkKeyUrlRequest == null || !checkKeyUrlRequest.Success)
             {
@@ -29,7 +29,7 @@ namespace CurrencyConvert.Services
             return checkKeyUrlRequest;
         }
 
-        public static async Task<ResponseMessageDto> RequestData(string url)
+        public static async Task<ResponseMessageDto>  RequestDataAsync(string url)
         {
             Cursor.Current = Cursors.WaitCursor;
             ResponseMessageDto deserializedResponse;

@@ -1,54 +1,118 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
 using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using CurrencyConvert.Data;
 using CurrencyConvert.Models;
 using CurrencyConvert.Services;
-using Newtonsoft.Json;
 
 namespace CurrencyConvert
 {
-
-
+    
     public partial class Form1 : Form
     {
-        private ApiUrlConstructors _apiUrlConstructors;
+        private const string DefualtBaseCurrency = "EUR";
+        private const string InvalidKeyMessage = "Invalid key, try again.";
+
         private readonly CurrencyData _currencyData = new CurrencyData();
+        private readonly string[] _defaultConvertCurrenciesList = new string[3] {"USD", "GBP", "RON"};
+
+        private ApiUrlConstructors _apiUrlConstructors;
 
         public Form1()
         {
             InitializeComponent();
-            
-
         }
 
+        #region CHECK API KEY
+        private async void apiKeyValidationButton_Click(object sender, EventArgs e)
+        {
+            Cursor.Current = Cursors.WaitCursor;
+
+            var key = apiKeyValidationInput.Text;
+            ResponseMessageDto symbolsData = await DataRequestService.GetTypesDataListAsync(key);
+
+            if (symbolsData != null)
+            {
+                ValidKeyActions(key, symbolsData);
+            }
+            else
+            {
+                InvalidKeyActions();
+            }
+
+            Cursor.Current = Cursors.Default;
+        }
+        private void InvalidKeyActions()
+        {
+            apiKeyValidationInfo.ForeColor = Color.DarkRed;
+            apiKeyValidationInfo.Text = InvalidKeyMessage;
+        }
+        private void ValidKeyActions(string key, ResponseMessageDto typesData)
+        {
+            DataInitialization(typesData);
+
+            _apiUrlConstructors = new ApiUrlConstructors(key);
+            apiKeyValidationInfo.ForeColor = Color.Black;
+            apiKeyValidationInfo.Text = "";
+
+            apiKeyValidationButton.Enabled = false;
+            apiKeyValidationInput.ReadOnly = true;
+            controlsPanel.Visible = true;
+        }
+        #endregion
+
+
         #region DATA INTIALIZATION
+        private void DataInitialization(ResponseMessageDto typesData)
+        {
+            AddCurrenciesNamesAndKeys(typesData);
+
+            SetCurrenciesDefaultOrExistingValues();
+            CurrentCurrencyInitialize();
+
+            DataGridDefine();
+            DataGridPopulate();
+
+            ToAndFromConvertInitialize();
+        }
+
+        private void AddCurrenciesNamesAndKeys(ResponseMessageDto typesData)
+        {
+            foreach (var symbolItem in typesData.Symbols)
+            {
+                _currencyData.NameToCode.Add(symbolItem.Value, symbolItem.Key);
+                _currencyData.CurrencyList.Add(symbolItem.Key);
+            }
+        }
+
         private void CurrentCurrencyInitialize()
         {
-            SetCurrenciesDefaultOrExistingValues();
 
             currentCurrencySelectDropdown.DataSource = _currencyData.NameToCode.Keys.ToList();
             currentCurrencySelectDropdown.SelectedItem = _currencyData.CodeEnumToLongName(_currencyData.BaseCurrency);
             currentCurrencySelectDropdown.DropDownStyle = ComboBoxStyle.DropDownList;
+
             currentCurrencyDisplayText.Text = _currencyData.CodeEnumToLongName(_currencyData.BaseCurrency);
         }
+
         private void SetCurrenciesDefaultOrExistingValues()
         {
-            _currencyData.BaseCurrency = _currencyData.NameToCode.ContainsValue("EUR") ? "EUR" : _currencyData.NameToCode.Values.First();
+            _currencyData.BaseCurrency = _currencyData.NameToCode.ContainsValue(DefualtBaseCurrency) ? DefualtBaseCurrency
+                : _currencyData.NameToCode.Values.First();
 
-            string[] defualtCurrenciesConvertList = new string[3] { "USD", "GBP", "RON" };
+            bool allCurrenciesExist = CheckCurrenciesExistence(_defaultConvertCurrenciesList);
+            for (int i = 0; i < _defaultConvertCurrenciesList.Length; i++)
+            {
+                _currencyData.ConvertCurrencyList[i] = allCurrenciesExist ? _defaultConvertCurrenciesList[i] : _currencyData.NameToCode.Values.Skip(i).Take(1).Single();
+            }
+        }
+
+        private bool CheckCurrenciesExistence(string[] defaultCurrenciesConvertList)
+        {
             bool allCurrenciesExist = true;
-
-            foreach (var defaultCurrency in defualtCurrenciesConvertList)
+            foreach (var defaultCurrency in defaultCurrenciesConvertList)
             {
                 if (!_currencyData.NameToCode.ContainsValue(defaultCurrency))
                 {
@@ -56,11 +120,9 @@ namespace CurrencyConvert
                 }
             }
 
-            for (int i = 0; i < defualtCurrenciesConvertList.Length; i++)
-            {
-                _currencyData.ConvertCurrencyList[i] = allCurrenciesExist ? defualtCurrenciesConvertList[i] : _currencyData.NameToCode.Values.Skip(i).Take(1).Single();
-            }
+            return allCurrenciesExist;
         }
+
         private void DataGridDefine()
         {
             var currencyCol = new DataGridViewComboBoxColumn()
@@ -105,119 +167,20 @@ namespace CurrencyConvert
             convertToDropdownInput.SelectedItem = _currencyData.CodeEnumToLongName(_currencyData.BaseCurrency);
             convertToDropdownInput.DropDownStyle = ComboBoxStyle.DropDownList;
         }
-        private void DataInitialization(ResponseMessageDto typesData)
-        {
-            foreach (var symbolItem in typesData.Symbols)
-            {
-                _currencyData.NameToCode.Add(symbolItem.Value, symbolItem.Key);
-                _currencyData.CurrencyList.Add(symbolItem.Key);
-            }
-
-            CurrentCurrencyInitialize();
-
-            DataGridDefine();
-            DataGridPopulate();
-
-            ToAndFromConvertInitialize();
-        }
-
-
         #endregion
 
 
-        #region EVENTS
-        private void apiKeyValidationButton_Click(object sender, EventArgs e)
-        {
-            CheckApiKey();
-        }
-        private void baseCurrency_SelectionChangeCommitted(object sender, EventArgs e)
-        {
-            var senderData = (ComboBox) sender;
-            string value = (string) this._currencyData.NameToCode[senderData.SelectedValue.ToString()];
-            
-            _currencyData.BaseCurrency = value;
-            currentCurrencyDisplayText.Text = _currencyData.CodeEnumToLongName(_currencyData.BaseCurrency);
-        }
+        #region CURRENCY CONVERT RATES
         private void getRatesButton_Click(object sender, EventArgs e)
         {
-            UpdateRatesValues();
+            UpdateCurrencyListValues();
             GetAndDisplayRates();
-        }
-        private async void convertToButton_Click(object sender, EventArgs e)
-        {
-            float convertAmount = (float) convertFromAmountInput.Value;
-
-            
-            string toCurrency =
-                (string) _currencyData.NameToCode[convertToDropdownInput.SelectedValue.ToString()];
-            string fromCurrency =
-                (string) _currencyData.NameToCode[convertFromDropdownInput.SelectedValue.ToString()];
-
-            
-
-            
-            string ratesUrl = _apiUrlConstructors.GetGetRatesUrl(new List<string>() {fromCurrency}, toCurrency);
-            ResponseMessageDto responseMessage = await DataRequestService.RequestData(ratesUrl);
-
-            if (responseMessage != null)
-            {
-                var convertedRates = CurrencyCalculator.GetRate(responseMessage.Rates, fromCurrency);
-                float rate = convertedRates[fromCurrency] / convertedRates[toCurrency];
-                convertResultTextbox.Text = (rate * convertAmount).ToString();
-
-            }
-
-        }
-        private void swichCurrenciesConvertButton_Click(object sender, EventArgs e)
-        {
-            var convertFromCurrencyValue = convertFromDropdownInput.SelectedValue;
-            convertFromDropdownInput.SelectedItem = convertToDropdownInput.SelectedItem;
-            convertToDropdownInput.SelectedItem = convertFromCurrencyValue;
-        }
-        #endregion
-
-
-        #region Action methods
-        private async void CheckApiKey()
-        {
-            Cursor.Current = Cursors.WaitCursor;
-
-            var key = apiKeyValidationInput.Text;
-            ResponseMessageDto symbolsData = await DataRequestService.GetTypesDataList(key);
-
-            if (symbolsData != null)
-            {
-                ValidKeyActions(key, symbolsData);
-            }
-            else
-            {
-                InvalidKeyActions();
-            }
-
-            Cursor.Current = Cursors.Default;
-        }
-        private void InvalidKeyActions()
-        {
-            apiKeyValidationInfo.ForeColor = Color.DarkRed;
-            apiKeyValidationInfo.Text = "Invalid key, try again.";
-        }
-        private void ValidKeyActions(string key, ResponseMessageDto typesData)
-        {
-            DataInitialization(typesData);
-
-            _apiUrlConstructors = new ApiUrlConstructors(key);
-            apiKeyValidationInfo.ForeColor = Color.Black;
-            apiKeyValidationInfo.Text = "";
-
-            apiKeyValidationButton.Enabled = false;
-            apiKeyValidationInput.ReadOnly = true;
-            controlsPanel.Visible = true;
         }
         private async void GetAndDisplayRates()
         {
             string ratesUrl = _apiUrlConstructors.GetGetRatesUrl(_currencyData.ConvertCurrencyList, _currencyData.BaseCurrency);
 
-            ResponseMessageDto responseData = await DataRequestService.RequestData(ratesUrl);
+            ResponseMessageDto responseData = await DataRequestService.RequestDataAsync(ratesUrl);
 
             if (responseData != null)
             {
@@ -234,7 +197,6 @@ namespace CurrencyConvert
                 var currentRate = (string)rate.Key;
                 foreach (DataGridViewRow row in ratesDataGridView.Rows)
                 {
-
                     var currenctCellCurrency = (string)_currencyData.NameToCode[row.Cells[0].Value.ToString()];
                     if (currenctCellCurrency == currentRate)
                     {
@@ -243,7 +205,7 @@ namespace CurrencyConvert
                 }
             }
         }
-        private void UpdateRatesValues()
+        private void UpdateCurrencyListValues()
         {
             var rows = ratesDataGridView.Rows;
 
@@ -256,8 +218,45 @@ namespace CurrencyConvert
             }
 
         }
-        #endregion
+        #endregion  
 
+
+        #region CURRENCY CONVERT TO AND FROM
+        private void baseCurrency_SelectionChangeCommitted(object sender, EventArgs e)
+        {
+            var senderData = (ComboBox) sender;
+            string value = (string) this._currencyData.NameToCode[senderData.SelectedValue.ToString()];
+            
+            _currencyData.BaseCurrency = value;
+            currentCurrencyDisplayText.Text = _currencyData.CodeEnumToLongName(_currencyData.BaseCurrency);
+        }
+        private async void convertToButton_Click(object sender, EventArgs e)
+        {
+            float convertAmount = (float) convertFromAmountInput.Value;
+
+            
+            string toCurrency = (string) _currencyData.NameToCode[convertToDropdownInput.SelectedValue.ToString()];
+            string fromCurrency = (string) _currencyData.NameToCode[convertFromDropdownInput.SelectedValue.ToString()];
+
+            
+            string ratesUrl = _apiUrlConstructors.GetGetRatesUrl(new List<string>() {fromCurrency}, toCurrency);
+            ResponseMessageDto responseMessage = await DataRequestService.RequestDataAsync(ratesUrl);
+
+            if (responseMessage != null)
+            {
+                var convertedRates = CurrencyCalculator.GetRate(responseMessage.Rates, fromCurrency);
+                float rate = convertedRates[fromCurrency] / convertedRates[toCurrency];
+                convertResultTextbox.Text = (rate * convertAmount).ToString();
+            }
+        }
+
+        private void switchCurrenciesConvertButton_Click(object sender, EventArgs e)
+        {
+            var convertFromCurrencyValue = convertFromDropdownInput.SelectedValue;
+            convertFromDropdownInput.SelectedItem = convertToDropdownInput.SelectedItem;
+            convertToDropdownInput.SelectedItem = convertFromCurrencyValue;
+        }
+        #endregion
 
     }
 }
