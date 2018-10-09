@@ -7,12 +7,12 @@ using System.Threading.Tasks;
 
 namespace CurrencyConvert.Data
 {
-    class CurrencyData
+    public class CurrencyData
     {
         public readonly List<string> CurrencyList;
         public readonly Dictionary<string, string> NameToCode;
         public string BaseCurrency { get; set; }
-        public string[] ConvertCurrencyList { get; private set; }
+        public string[] ConvertCurrencyList { get; }
 
         public CurrencyData()
         {

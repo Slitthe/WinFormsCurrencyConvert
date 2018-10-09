@@ -36,9 +36,14 @@ namespace CurrencyConvert.Services
             return AddUrlParameters(urlParams, baseApi);
         }
 
+        // TODO: Use a separate class instead of a tuple
+        // TODO: Lookup Named tuples
 
+        // TODO: Make an example using System.ValueTuple (named tuples)
+        // TODO: Make an example using inline functions
         private string AddUrlParameters(IEnumerable<Tuple<string, string>> urlParams, string url)
         {
+            // TODO: Lookup URI builder instead of this method
             var paramsAsKeyValuePairs = new List<string>()
             {
                 $"{KeyParamName}={_apiKey}"

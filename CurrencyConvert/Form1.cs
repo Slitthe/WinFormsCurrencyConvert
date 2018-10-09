@@ -12,11 +12,11 @@ namespace CurrencyConvert
     
     public partial class Form1 : Form
     {
-        private const string DefualtBaseCurrency = "EUR";
+        private const string DefualtBaseCurrency = "asd";
         private const string InvalidKeyMessage = "Invalid key, try again.";
 
         private readonly CurrencyData _currencyData = new CurrencyData();
-        private readonly string[] _defaultConvertCurrenciesList = new string[3] {"USD", "GBP", "RON"};
+        private readonly string[] _defaultConvertCurrenciesList = new string[3] {"xds", "xsg", "sfs"};
 
         private ApiUrlConstructors _apiUrlConstructors;
 
@@ -31,6 +31,8 @@ namespace CurrencyConvert
             Cursor.Current = Cursors.WaitCursor;
 
             var key = apiKeyValidationInput.Text;
+
+            // TODO: Add awit/async to technical tasks
             ResponseMessageDto symbolsData = await DataRequestService.GetTypesDataListAsync(key);
 
             if (symbolsData != null)
@@ -51,7 +53,7 @@ namespace CurrencyConvert
         }
         private void ValidKeyActions(string key, ResponseMessageDto typesData)
         {
-            DataInitialization(typesData);
+            InitializeData(typesData);
 
             _apiUrlConstructors = new ApiUrlConstructors(key);
             apiKeyValidationInfo.ForeColor = Color.Black;
@@ -65,7 +67,7 @@ namespace CurrencyConvert
 
 
         #region DATA INTIALIZATION
-        private void DataInitialization(ResponseMessageDto typesData)
+        private void InitializeData(ResponseMessageDto typesData)
         {
             AddCurrenciesNamesAndKeys(typesData);
 
@@ -178,15 +180,17 @@ namespace CurrencyConvert
         }
         private async void GetAndDisplayRates()
         {
+            // TODO: combines these two actions into a single method, explose only high level methods as public ones onesm example get rates directly from a method
             string ratesUrl = _apiUrlConstructors.GetGetRatesUrl(_currencyData.ConvertCurrencyList, _currencyData.BaseCurrency);
-
             ResponseMessageDto responseData = await DataRequestService.RequestDataAsync(ratesUrl);
 
             if (responseData != null)
             {
                 var convertedRates = CurrencyCalculator.GetRate(responseData.Rates, _currencyData.BaseCurrency);
                 DisplayRatesInGridView(convertedRates);
+                //TODO: explicity interface implementation (technical tasks)
 
+                // TODO: important async/await
             }
 
         }
@@ -225,16 +229,17 @@ namespace CurrencyConvert
         private void baseCurrency_SelectionChangeCommitted(object sender, EventArgs e)
         {
             var senderData = (ComboBox) sender;
-            string value = (string) this._currencyData.NameToCode[senderData.SelectedValue.ToString()];
+            string currencySymbol = (string) this._currencyData.NameToCode[senderData.SelectedValue.ToString()];
             
-            _currencyData.BaseCurrency = value;
+            _currencyData.BaseCurrency = currencySymbol;
             currentCurrencyDisplayText.Text = _currencyData.CodeEnumToLongName(_currencyData.BaseCurrency);
         }
         private async void convertToButton_Click(object sender, EventArgs e)
         {
+
+            // TODO: Make a convert method independent of the WinFOrms app, in a separate assembly
             float convertAmount = (float) convertFromAmountInput.Value;
 
-            
             string toCurrency = (string) _currencyData.NameToCode[convertToDropdownInput.SelectedValue.ToString()];
             string fromCurrency = (string) _currencyData.NameToCode[convertFromDropdownInput.SelectedValue.ToString()];
 
