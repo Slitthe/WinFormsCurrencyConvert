@@ -181,7 +181,7 @@ namespace CurrencyConvert
         private async void GetAndDisplayRates()
         {
             // TODO: combines these two actions into a single method, explose only high level methods as public ones onesm example get rates directly from a method
-            string ratesUrl = _apiUrlConstructors.GetGetRatesUrl(_currencyData.ConvertCurrencyList, _currencyData.BaseCurrency);
+            Uri ratesUrl = _apiUrlConstructors.GetGetRatesUrl(_currencyData.ConvertCurrencyList, _currencyData.BaseCurrency);
             ResponseMessageDto responseData = await DataRequestService.RequestDataAsync(ratesUrl);
 
             if (responseData != null)
@@ -244,7 +244,7 @@ namespace CurrencyConvert
             string fromCurrency = (string) _currencyData.NameToCode[convertFromDropdownInput.SelectedValue.ToString()];
 
             
-            string ratesUrl = _apiUrlConstructors.GetGetRatesUrl(new List<string>() {fromCurrency}, toCurrency);
+            Uri ratesUrl = _apiUrlConstructors.GetGetRatesUrl(new List<string>() {fromCurrency}, toCurrency);
             ResponseMessageDto responseMessage = await DataRequestService.RequestDataAsync(ratesUrl);
 
             if (responseMessage != null)

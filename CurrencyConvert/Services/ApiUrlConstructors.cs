@@ -3,12 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web;
 
 namespace CurrencyConvert.Services
 {
     class ApiUrlConstructors
     {
-        private const string BaseApi = "http://data.fixer.io/api/";
+        private readonly Uri BaseApi = new Uri("http://data.fixer.io/api/");
         private const string KeyParamName = "access_key";
 
         private readonly string _apiKey;
@@ -18,45 +19,47 @@ namespace CurrencyConvert.Services
             _apiKey = apiKey;
         }
 
-        public string GetGetRatesUrl(IEnumerable<string> currencyList, string baseCurrency)
+        public Uri GetGetRatesUrl(IEnumerable<string> currencyList, string baseCurrency)
         {
-            var baseApi = BaseApi + "latest";
+            UriBuilder baseApi = new UriBuilder($"{BaseApi}");
+            baseApi.Path += "latest";
 
             var currencySymbols = currencyList
-                .Concat(new List<string> {baseCurrency})
-                .Select(currencySymbol => currencySymbol.ToString())
+                .Concat( new List<string> {baseCurrency} )
+                .Select( currencySymbol => currencySymbol.ToString() )
                 .ToArray();
 
             string symbolsToConvertTo = string.Join(",", currencySymbols);
-
             var urlParams = new List<Tuple<string, string>>()
-                {
-                    new Tuple<string, string>("symbols", symbolsToConvertTo)
-                };
-            return AddUrlParameters(urlParams, baseApi);
+            {
+                new Tuple<string, string>("symbols", symbolsToConvertTo)
+            };
+
+            return AddUrlParameters(urlParams, baseApi.Uri);
         }
 
-        // TODO: Use a separate class instead of a tuple
         // TODO: Lookup Named tuples
 
         // TODO: Make an example using System.ValueTuple (named tuples)
         // TODO: Make an example using inline functions
-        private string AddUrlParameters(IEnumerable<Tuple<string, string>> urlParams, string url)
+        private Uri AddUrlParameters(IEnumerable<Tuple<string, string>> urlParams, Uri url)
         {
+            var uriBuilder = new UriBuilder(url);
+
+
+            var urlParameters = HttpUtility.ParseQueryString("");
+            urlParameters[KeyParamName] = _apiKey;
+
             // TODO: Lookup URI builder instead of this method
-            var paramsAsKeyValuePairs = new List<string>()
-            {
-                $"{KeyParamName}={_apiKey}"
-            };
 
             foreach (var urlParam in urlParams)
             {
-                paramsAsKeyValuePairs.Add($"{urlParam.Item1}={urlParam.Item2}");
+                urlParameters[urlParam.Item1] = urlParam.Item2;
             }
-            string joinedParams = string.Join("&", paramsAsKeyValuePairs);
 
-            var urlWithParams = $"{url}?{joinedParams}";
-            return urlWithParams;
+            uriBuilder.Query = urlParameters.ToString();
+            
+            return uriBuilder.Uri;
         }
 
 

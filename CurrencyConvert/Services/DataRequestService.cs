@@ -17,7 +17,7 @@ namespace CurrencyConvert.Services
 
         public static async Task<ResponseMessageDto> GetTypesDataListAsync(string apiKey)
         {
-            string checkKeyUrl = "http://data.fixer.io/api/symbols?access_key=" + apiKey;
+            Uri checkKeyUrl = new UriBuilder($"http://data.fixer.io/api/symbols?access_key={apiKey}").Uri;
 
             ResponseMessageDto checkKeyUrlRequest = await RequestDataAsync(checkKeyUrl);
 
@@ -29,7 +29,7 @@ namespace CurrencyConvert.Services
             return checkKeyUrlRequest;
         }
 
-        public static async Task<ResponseMessageDto>  RequestDataAsync(string url)
+        public static async Task<ResponseMessageDto>  RequestDataAsync(Uri url)
         {
             Cursor.Current = Cursors.WaitCursor;
             ResponseMessageDto deserializedResponse;
