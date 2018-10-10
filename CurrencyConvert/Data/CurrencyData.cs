@@ -9,7 +9,6 @@ namespace CurrencyConvert.Data
 {
     public class CurrencyData
     {
-        public readonly List<string> CurrencyList;
         public readonly Dictionary<string, string> NameToCode;
         public string BaseCurrency { get; set; }
         public string[] ConvertCurrencyList { get; }
@@ -17,7 +16,6 @@ namespace CurrencyConvert.Data
         public CurrencyData()
         {
             ConvertCurrencyList = new string[3];
-            CurrencyList = new List<string>();
             NameToCode = new Dictionary<string, string>();
         }
 

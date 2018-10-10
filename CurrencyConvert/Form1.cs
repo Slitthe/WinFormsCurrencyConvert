@@ -6,38 +6,78 @@ using System.Windows.Forms;
 using CurrencyConvert.Data;
 using CurrencyConvert.Models;
 using CurrencyConvert.Services;
+using CurrencyConvertService;
+using System.Threading.Tasks;
 
 namespace CurrencyConvert
 {
-    
+
     public partial class Form1 : Form
     {
-        private const string DefualtBaseCurrency = "asd";
+        private const string DefaultBaseCurrency = "EUR";
         private const string InvalidKeyMessage = "Invalid key, try again.";
 
         private readonly CurrencyData _currencyData = new CurrencyData();
-        private readonly string[] _defaultConvertCurrenciesList = new string[3] {"xds", "xsg", "sfs"};
+        private readonly string[] _defaultConvertCurrenciesList = {"USD", "GBP", "RON"};
 
-        private ApiUrlConstructors _apiUrlConstructors;
+        private CurrencyConvertCalculator _currencyCalculator;
 
         public Form1()
         {
             InitializeComponent();
         }
 
-        #region CHECK API KEY
+
+        #region EVENTS
         private async void apiKeyValidationButton_Click(object sender, EventArgs e)
+        {
+            await ValidateKey();
+        }
+        private void getRatesButton_Click(object sender, EventArgs e)
+        {
+            ConvertRatesGrid();
+        }
+        private void baseCurrency_SelectionChangeCommitted(object sender, EventArgs e)
+        {
+            var senderData = (ComboBox) sender;
+            string currencySymbol = (string) this._currencyData.NameToCode[senderData.SelectedValue.ToString()];
+
+            ChangeBaseCurrency(currencySymbol);
+        }
+        private void convertToButton_Click(object sender, EventArgs e)
+        {
+            ApplyToAndFromCurrencyConversion();
+
+        }
+        private void switchCurrenciesConvertButton_Click(object sender, EventArgs e)
+        {
+            SwitchCurrencies();
+        }
+        private void convertFromAmountInput_ValueChanged(object sender, EventArgs e)
+        {
+            ApplyToAndFromCurrencyConversion();
+        }
+        private void ratesDataGridView_CurrentCellDirtyStateChanged(object sender, EventArgs e)
+        {
+            ConvertRatesGrid();
+        }
+        #endregion
+
+
+        #region APP STARTUP
+
+        private async Task ValidateKey()
         {
             Cursor.Current = Cursors.WaitCursor;
 
             var key = apiKeyValidationInput.Text;
 
-            // TODO: Add awit/async to technical tasks
             ResponseMessageDto symbolsData = await DataRequestService.GetTypesDataListAsync(key);
+            ResponseMessageDto currenciesRates = await DataRequestService.GetRatesAsync(key);
 
-            if (symbolsData != null)
+            if (symbolsData != null && currenciesRates != null)
             {
-                ValidKeyActions(key, symbolsData);
+                ValidKeyActions(key, symbolsData, currenciesRates);
             }
             else
             {
@@ -46,16 +86,19 @@ namespace CurrencyConvert
 
             Cursor.Current = Cursors.Default;
         }
+
         private void InvalidKeyActions()
         {
             apiKeyValidationInfo.ForeColor = Color.DarkRed;
             apiKeyValidationInfo.Text = InvalidKeyMessage;
         }
-        private void ValidKeyActions(string key, ResponseMessageDto typesData)
+
+        private void ValidKeyActions(string key, ResponseMessageDto typesData, ResponseMessageDto ratesData)
         {
+            StoreCurrenciesRates(ratesData);
             InitializeData(typesData);
 
-            _apiUrlConstructors = new ApiUrlConstructors(key);
+            new ApiUrlConstructors(key);
             apiKeyValidationInfo.ForeColor = Color.Black;
             apiKeyValidationInfo.Text = "";
 
@@ -63,10 +106,74 @@ namespace CurrencyConvert
             apiKeyValidationInput.ReadOnly = true;
             controlsPanel.Visible = true;
         }
+
+        private void StoreCurrenciesRates(ResponseMessageDto ratesData)
+        {
+            Dictionary<string, float> rates = ratesData.Rates;
+            _currencyCalculator = new CurrencyConvertCalculator(rates);
+        }
+
+
         #endregion
 
 
-        #region DATA INTIALIZATION
+        private void SwitchCurrencies()
+        {
+            var convertFromCurrencyValue = convertFromDropdownInput.SelectedValue;
+            convertFromDropdownInput.SelectedItem = convertToDropdownInput.SelectedItem;
+            convertToDropdownInput.SelectedItem = convertFromCurrencyValue;
+
+            ApplyToAndFromCurrencyConversion();
+        }
+
+        private void ChangeBaseCurrency(string currencySymbol)
+        {
+            _currencyData.BaseCurrency = currencySymbol;
+            currentCurrencyDisplayText.Text = _currencyData.CodeEnumToLongName(_currencyData.BaseCurrency);
+
+            ConvertRatesGrid();
+        }
+
+        private void ApplyToAndFromCurrencyConversion()
+        {
+            float convertAmount = (float) convertFromAmountInput.Value;
+
+            string toCurrency = (string) _currencyData.NameToCode[convertToDropdownInput.SelectedValue.ToString()];
+            string fromCurrency = (string) _currencyData.NameToCode[convertFromDropdownInput.SelectedValue.ToString()];
+
+            var convertResult = _currencyCalculator.ConvertFromAndTo(fromCurrency, toCurrency, convertAmount);
+            convertResultTextbox.Text = convertResult.ToString();
+        }
+
+        
+        private void DisplayRatesInGridView()
+        {
+            foreach (DataGridViewRow row in ratesDataGridView.Rows)
+            {
+                var currentCellCurrencyCode = (string) _currencyData.NameToCode[row.Cells[0].Value.ToString()];
+
+                row.Cells[1].Value = _currencyCalculator.ConvertFromAndTo(_currencyData.BaseCurrency, currentCellCurrencyCode, 1);
+            }
+        }
+    
+        private void UpdateCurrencyListValues()
+        {
+            var rows = ratesDataGridView.Rows;
+
+            for (int i = 0; i < rows.Count; i++)
+            {
+                DataGridViewRow currentRow = rows[i];
+                string currentRate = (string)_currencyData.NameToCode[currentRow.Cells[0].Value.ToString()];
+
+                _currencyData.ConvertCurrencyList[i] = currentRate;
+            }
+
+        }
+
+
+
+
+        #region INITIALIZE
         private void InitializeData(ResponseMessageDto typesData)
         {
             AddCurrenciesNamesAndKeys(typesData);
@@ -78,6 +185,9 @@ namespace CurrencyConvert
             DataGridPopulate();
 
             ToAndFromConvertInitialize();
+            ConvertRatesGrid();
+
+            ratesDataGridView.CurrentCellDirtyStateChanged += ratesDataGridView_CurrentCellDirtyStateChanged;
         }
 
         private void AddCurrenciesNamesAndKeys(ResponseMessageDto typesData)
@@ -85,10 +195,22 @@ namespace CurrencyConvert
             foreach (var symbolItem in typesData.Symbols)
             {
                 _currencyData.NameToCode.Add(symbolItem.Value, symbolItem.Key);
-                _currencyData.CurrencyList.Add(symbolItem.Key);
             }
         }
+        private void SetCurrenciesDefaultOrExistingValues()
+        {
+            _currencyData.BaseCurrency = _currencyData.NameToCode.ContainsValue(DefaultBaseCurrency)
+                ? DefaultBaseCurrency
+                : _currencyData.NameToCode.Values.First();
 
+            bool allCurrenciesExist = CheckCurrenciesExistence(_defaultConvertCurrenciesList);
+            for (int i = 0; i < _defaultConvertCurrenciesList.Length; i++)
+            {
+                _currencyData.ConvertCurrencyList[i] = allCurrenciesExist
+                    ? _defaultConvertCurrenciesList[i]
+                    : _currencyData.NameToCode.Values.Skip(i).Take(1).Single();
+            }
+        }
         private void CurrentCurrencyInitialize()
         {
 
@@ -98,33 +220,6 @@ namespace CurrencyConvert
 
             currentCurrencyDisplayText.Text = _currencyData.CodeEnumToLongName(_currencyData.BaseCurrency);
         }
-
-        private void SetCurrenciesDefaultOrExistingValues()
-        {
-            _currencyData.BaseCurrency = _currencyData.NameToCode.ContainsValue(DefualtBaseCurrency) ? DefualtBaseCurrency
-                : _currencyData.NameToCode.Values.First();
-
-            bool allCurrenciesExist = CheckCurrenciesExistence(_defaultConvertCurrenciesList);
-            for (int i = 0; i < _defaultConvertCurrenciesList.Length; i++)
-            {
-                _currencyData.ConvertCurrencyList[i] = allCurrenciesExist ? _defaultConvertCurrenciesList[i] : _currencyData.NameToCode.Values.Skip(i).Take(1).Single();
-            }
-        }
-
-        private bool CheckCurrenciesExistence(string[] defaultCurrenciesConvertList)
-        {
-            bool allCurrenciesExist = true;
-            foreach (var defaultCurrency in defaultCurrenciesConvertList)
-            {
-                if (!_currencyData.NameToCode.ContainsValue(defaultCurrency))
-                {
-                    allCurrenciesExist = false;
-                }
-            }
-
-            return allCurrenciesExist;
-        }
-
         private void DataGridDefine()
         {
             var currencyCol = new DataGridViewComboBoxColumn()
@@ -144,9 +239,9 @@ namespace CurrencyConvert
                 ValueType = typeof(int)
             };
 
-
             ratesDataGridView.Columns.Add(currencyCol);
             ratesDataGridView.Columns.Add(currencyRate);
+
         }
         private void DataGridPopulate()
         {
@@ -169,97 +264,24 @@ namespace CurrencyConvert
             convertToDropdownInput.SelectedItem = _currencyData.CodeEnumToLongName(_currencyData.BaseCurrency);
             convertToDropdownInput.DropDownStyle = ComboBoxStyle.DropDownList;
         }
-        #endregion
-
-
-        #region CURRENCY CONVERT RATES
-        private void getRatesButton_Click(object sender, EventArgs e)
+        private void ConvertRatesGrid()
         {
+            DisplayRatesInGridView();
             UpdateCurrencyListValues();
-            GetAndDisplayRates();
         }
-        private async void GetAndDisplayRates()
+
+        private bool CheckCurrenciesExistence(string[] defaultCurrenciesConvertList)
         {
-            // TODO: combines these two actions into a single method, explose only high level methods as public ones onesm example get rates directly from a method
-            Uri ratesUrl = _apiUrlConstructors.GetGetRatesUrl(_currencyData.ConvertCurrencyList, _currencyData.BaseCurrency);
-            ResponseMessageDto responseData = await DataRequestService.RequestDataAsync(ratesUrl);
-
-            if (responseData != null)
+            bool allCurrenciesExist = true;
+            foreach (var defaultCurrency in defaultCurrenciesConvertList)
             {
-                var convertedRates = CurrencyCalculator.GetRate(responseData.Rates, _currencyData.BaseCurrency);
-                DisplayRatesInGridView(convertedRates);
-                //TODO: explicity interface implementation (technical tasks)
-
-                // TODO: important async/await
-            }
-
-        }
-        private void DisplayRatesInGridView(Dictionary<string, float> convertedRates)
-        {
-            foreach (var rate in convertedRates)
-            {
-                var currentRate = (string)rate.Key;
-                foreach (DataGridViewRow row in ratesDataGridView.Rows)
+                if (!_currencyData.NameToCode.ContainsValue(defaultCurrency))
                 {
-                    var currenctCellCurrency = (string)_currencyData.NameToCode[row.Cells[0].Value.ToString()];
-                    if (currenctCellCurrency == currentRate)
-                    {
-                        row.Cells[1].Value = rate.Value;
-                    }
+                    allCurrenciesExist = false;
                 }
             }
-        }
-        private void UpdateCurrencyListValues()
-        {
-            var rows = ratesDataGridView.Rows;
 
-            for (int i = 0; i < rows.Count; i++)
-            {
-                DataGridViewRow currentRow = rows[i];
-                string currentRate = (string)_currencyData.NameToCode[currentRow.Cells[0].Value.ToString()];
-
-                _currencyData.ConvertCurrencyList[i] = currentRate;
-            }
-
-        }
-        #endregion  
-
-
-        #region CURRENCY CONVERT TO AND FROM
-        private void baseCurrency_SelectionChangeCommitted(object sender, EventArgs e)
-        {
-            var senderData = (ComboBox) sender;
-            string currencySymbol = (string) this._currencyData.NameToCode[senderData.SelectedValue.ToString()];
-            
-            _currencyData.BaseCurrency = currencySymbol;
-            currentCurrencyDisplayText.Text = _currencyData.CodeEnumToLongName(_currencyData.BaseCurrency);
-        }
-        private async void convertToButton_Click(object sender, EventArgs e)
-        {
-
-            // TODO: Make a convert method independent of the WinFOrms app, in a separate assembly
-            float convertAmount = (float) convertFromAmountInput.Value;
-
-            string toCurrency = (string) _currencyData.NameToCode[convertToDropdownInput.SelectedValue.ToString()];
-            string fromCurrency = (string) _currencyData.NameToCode[convertFromDropdownInput.SelectedValue.ToString()];
-
-            
-            Uri ratesUrl = _apiUrlConstructors.GetGetRatesUrl(new List<string>() {fromCurrency}, toCurrency);
-            ResponseMessageDto responseMessage = await DataRequestService.RequestDataAsync(ratesUrl);
-
-            if (responseMessage != null)
-            {
-                var convertedRates = CurrencyCalculator.GetRate(responseMessage.Rates, fromCurrency);
-                float rate = convertedRates[fromCurrency] / convertedRates[toCurrency];
-                convertResultTextbox.Text = (rate * convertAmount).ToString();
-            }
-        }
-
-        private void switchCurrenciesConvertButton_Click(object sender, EventArgs e)
-        {
-            var convertFromCurrencyValue = convertFromDropdownInput.SelectedValue;
-            convertFromDropdownInput.SelectedItem = convertToDropdownInput.SelectedItem;
-            convertToDropdownInput.SelectedItem = convertFromCurrencyValue;
+            return allCurrenciesExist;
         }
         #endregion
 

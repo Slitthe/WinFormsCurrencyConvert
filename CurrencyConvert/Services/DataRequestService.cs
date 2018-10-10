@@ -29,6 +29,21 @@ namespace CurrencyConvert.Services
             return checkKeyUrlRequest;
         }
 
+        public static async Task<ResponseMessageDto> GetRatesAsync(string apiKey)
+        {
+            Uri getRatesUrl = new UriBuilder($"http://data.fixer.io/api/latest?access_key={apiKey}").Uri;
+
+            ResponseMessageDto getRatesResponse = await RequestDataAsync(getRatesUrl);
+
+            if (getRatesResponse.Rates == null)
+            {
+                return null;
+            }
+
+            return getRatesResponse;
+
+        }
+
         public static async Task<ResponseMessageDto>  RequestDataAsync(Uri url)
         {
             Cursor.Current = Cursors.WaitCursor;

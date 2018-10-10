@@ -60,10 +60,10 @@
             // apiKeyValidationInput
             // 
             this.apiKeyValidationInput.Location = new System.Drawing.Point(85, 8);
-            this.apiKeyValidationInput.Margin = new System.Windows.Forms.Padding(0, 0, 0, 0);
+            this.apiKeyValidationInput.Margin = new System.Windows.Forms.Padding(0);
             this.apiKeyValidationInput.MinimumSize = new System.Drawing.Size(4, 23);
             this.apiKeyValidationInput.Name = "apiKeyValidationInput";
-            this.apiKeyValidationInput.Size = new System.Drawing.Size(154, 23);
+            this.apiKeyValidationInput.Size = new System.Drawing.Size(154, 20);
             this.apiKeyValidationInput.TabIndex = 0;
             // 
             // apiKeyValidationLabel
@@ -78,7 +78,7 @@
             // apiKeyValidationButton
             // 
             this.apiKeyValidationButton.Location = new System.Drawing.Point(245, 8);
-            this.apiKeyValidationButton.Margin = new System.Windows.Forms.Padding(0, 0, 0, 0);
+            this.apiKeyValidationButton.Margin = new System.Windows.Forms.Padding(0);
             this.apiKeyValidationButton.Name = "apiKeyValidationButton";
             this.apiKeyValidationButton.Size = new System.Drawing.Size(98, 23);
             this.apiKeyValidationButton.TabIndex = 2;
@@ -153,6 +153,8 @@
             // 
             // convertFromAmountInput
             // 
+            this.convertFromAmountInput.CausesValidation = false;
+            this.convertFromAmountInput.DecimalPlaces = 5;
             this.convertFromAmountInput.Location = new System.Drawing.Point(6, 91);
             this.convertFromAmountInput.Name = "convertFromAmountInput";
             this.convertFromAmountInput.Size = new System.Drawing.Size(123, 20);
@@ -162,6 +164,7 @@
             0,
             0,
             0});
+            this.convertFromAmountInput.ValueChanged += new System.EventHandler(this.convertFromAmountInput_ValueChanged);
             // 
             // convertToDropdownLabel
             // 

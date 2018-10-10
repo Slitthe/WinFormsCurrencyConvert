@@ -30,19 +30,15 @@ namespace CurrencyConvert.Services
                 .ToArray();
 
             string symbolsToConvertTo = string.Join(",", currencySymbols);
-            var urlParams = new List<Tuple<string, string>>()
+            var urlParams = new List<(string paramKey, string paramName)>()
             {
-                new Tuple<string, string>("symbols", symbolsToConvertTo)
+               ("symbols", symbolsToConvertTo)
             };
 
             return AddUrlParameters(urlParams, baseApi.Uri);
         }
 
-        // TODO: Lookup Named tuples
-
-        // TODO: Make an example using System.ValueTuple (named tuples)
-        // TODO: Make an example using inline functions
-        private Uri AddUrlParameters(IEnumerable<Tuple<string, string>> urlParams, Uri url)
+        private Uri AddUrlParameters(IEnumerable<(string paramKey, string paramName)> urlParams, Uri url)
         {
             var uriBuilder = new UriBuilder(url);
 
@@ -50,11 +46,10 @@ namespace CurrencyConvert.Services
             var urlParameters = HttpUtility.ParseQueryString("");
             urlParameters[KeyParamName] = _apiKey;
 
-            // TODO: Lookup URI builder instead of this method
 
             foreach (var urlParam in urlParams)
             {
-                urlParameters[urlParam.Item1] = urlParam.Item2;
+                urlParameters[urlParam.paramKey] = urlParam.paramName;
             }
 
             uriBuilder.Query = urlParameters.ToString();
