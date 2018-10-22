@@ -66,10 +66,11 @@ namespace CurrencyConvert
 
         #region APP STARTUP
 
+        
+
         private async Task ValidateKey()
         {
             Cursor.Current = Cursors.WaitCursor;
-
             var key = apiKeyValidationInput.Text;
 
             ResponseMessageDto symbolsData = await DataRequestService.GetTypesDataListAsync(key);
@@ -115,62 +116,6 @@ namespace CurrencyConvert
 
 
         #endregion
-
-
-        private void SwitchCurrencies()
-        {
-            var convertFromCurrencyValue = convertFromDropdownInput.SelectedValue;
-            convertFromDropdownInput.SelectedItem = convertToDropdownInput.SelectedItem;
-            convertToDropdownInput.SelectedItem = convertFromCurrencyValue;
-
-            ApplyToAndFromCurrencyConversion();
-        }
-
-        private void ChangeBaseCurrency(string currencySymbol)
-        {
-            _currencyData.BaseCurrency = currencySymbol;
-            currentCurrencyDisplayText.Text = _currencyData.CodeEnumToLongName(_currencyData.BaseCurrency);
-
-            ConvertRatesGrid();
-        }
-
-        private void ApplyToAndFromCurrencyConversion()
-        {
-            float convertAmount = (float) convertFromAmountInput.Value;
-
-            string toCurrency = (string) _currencyData.NameToCode[convertToDropdownInput.SelectedValue.ToString()];
-            string fromCurrency = (string) _currencyData.NameToCode[convertFromDropdownInput.SelectedValue.ToString()];
-
-            var convertResult = _currencyCalculator.ConvertFromAndTo(fromCurrency, toCurrency, convertAmount);
-            convertResultTextbox.Text = convertResult.ToString();
-        }
-
-        
-        private void DisplayRatesInGridView()
-        {
-            foreach (DataGridViewRow row in ratesDataGridView.Rows)
-            {
-                var currentCellCurrencyCode = (string) _currencyData.NameToCode[row.Cells[0].Value.ToString()];
-
-                row.Cells[1].Value = _currencyCalculator.ConvertFromAndTo(_currencyData.BaseCurrency, currentCellCurrencyCode, 1);
-            }
-        }
-    
-        private void UpdateCurrencyListValues()
-        {
-            var rows = ratesDataGridView.Rows;
-
-            for (int i = 0; i < rows.Count; i++)
-            {
-                DataGridViewRow currentRow = rows[i];
-                string currentRate = (string)_currencyData.NameToCode[currentRow.Cells[0].Value.ToString()];
-
-                _currencyData.ConvertCurrencyList[i] = currentRate;
-            }
-
-        }
-
-
 
 
         #region INITIALIZE
@@ -284,6 +229,56 @@ namespace CurrencyConvert
             return allCurrenciesExist;
         }
         #endregion
+
+
+        private void SwitchCurrencies()
+        {
+            var convertFromCurrencyValue = convertFromDropdownInput.SelectedValue;
+            convertFromDropdownInput.SelectedItem = convertToDropdownInput.SelectedItem;
+            convertToDropdownInput.SelectedItem = convertFromCurrencyValue;
+
+            ApplyToAndFromCurrencyConversion();
+        }
+        private void ChangeBaseCurrency(string currencySymbol)
+        {
+            _currencyData.BaseCurrency = currencySymbol;
+            currentCurrencyDisplayText.Text = _currencyData.CodeEnumToLongName(_currencyData.BaseCurrency);
+
+            ConvertRatesGrid();
+        }
+        private void ApplyToAndFromCurrencyConversion()
+        {
+            float convertAmount = (float)convertFromAmountInput.Value;
+
+            string toCurrency = _currencyData.NameToCode[convertToDropdownInput.SelectedValue.ToString()];
+            string fromCurrency = _currencyData.NameToCode[convertFromDropdownInput.SelectedValue.ToString()];
+
+            var convertResult = _currencyCalculator.ConvertFromAndTo(fromCurrency, toCurrency, convertAmount);
+            convertResultTextbox.Text = convertResult.ToString();
+        }
+        private void DisplayRatesInGridView()
+        {
+            foreach (DataGridViewRow row in ratesDataGridView.Rows)
+            {
+                string currentCellCurrencyCode = _currencyData.NameToCode[row.Cells[0].Value.ToString()];
+
+                row.Cells[1].Value = _currencyCalculator.ConvertFromAndTo(_currencyData.BaseCurrency, currentCellCurrencyCode, 1);
+            }
+        }
+
+        private void UpdateCurrencyListValues()
+        {
+            var rows = ratesDataGridView.Rows;
+
+            for (int i = 0; i < rows.Count; i++)
+            {
+                DataGridViewRow currentRow = rows[i];
+                string currentRate = _currencyData.NameToCode[currentRow.Cells[0].Value.ToString()];
+
+                _currencyData.ConvertCurrencyList[i] = currentRate;
+            }
+
+        }
 
     }
 }

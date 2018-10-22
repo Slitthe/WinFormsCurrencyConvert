@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using CurrencyConvert.Models;
@@ -18,7 +19,8 @@ namespace CurrencyConvert.Services
         public static async Task<ResponseMessageDto> GetTypesDataListAsync(string apiKey)
         {
             Uri checkKeyUrl = new UriBuilder($"http://data.fixer.io/api/symbols?access_key={apiKey}").Uri;
-
+            // Uri checkKeyUrl = new UriBuilder($"http://localhost:3000/delay").Uri;
+            await Task.Delay(5000).ConfigureAwait(true);
             ResponseMessageDto checkKeyUrlRequest = await RequestDataAsync(checkKeyUrl);
 
             if (checkKeyUrlRequest == null || !checkKeyUrlRequest.Success)
@@ -32,6 +34,8 @@ namespace CurrencyConvert.Services
         public static async Task<ResponseMessageDto> GetRatesAsync(string apiKey)
         {
             Uri getRatesUrl = new UriBuilder($"http://data.fixer.io/api/latest?access_key={apiKey}").Uri;
+            // Uri getRatesUrl = new UriBuilder($"http://data.fixer.io/api/latest?access_key=099344cfbf5f7e75c5848a08f5cfa030").Uri;
+            await Task.Delay(5000).ConfigureAwait(true);
 
             ResponseMessageDto getRatesResponse = await RequestDataAsync(getRatesUrl);
 
