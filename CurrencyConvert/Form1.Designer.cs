@@ -28,9 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.apiKeyValidationInput = new System.Windows.Forms.TextBox();
-            this.apiKeyValidationLabel = new System.Windows.Forms.Label();
-            this.apiKeyValidationButton = new System.Windows.Forms.Button();
+            this.startApplicationButton = new System.Windows.Forms.Button();
             this.apiKeyValidationInfo = new System.Windows.Forms.Label();
             this.controlsPanel = new System.Windows.Forms.Panel();
             this.panel1 = new System.Windows.Forms.Panel();
@@ -57,38 +55,20 @@
             ((System.ComponentModel.ISupportInitialize)(this.ratesDataGridView)).BeginInit();
             this.SuspendLayout();
             // 
-            // apiKeyValidationInput
+            // startApplicationButton
             // 
-            this.apiKeyValidationInput.Location = new System.Drawing.Point(85, 8);
-            this.apiKeyValidationInput.Margin = new System.Windows.Forms.Padding(0);
-            this.apiKeyValidationInput.MinimumSize = new System.Drawing.Size(4, 23);
-            this.apiKeyValidationInput.Name = "apiKeyValidationInput";
-            this.apiKeyValidationInput.Size = new System.Drawing.Size(154, 20);
-            this.apiKeyValidationInput.TabIndex = 0;
-            // 
-            // apiKeyValidationLabel
-            // 
-            this.apiKeyValidationLabel.Location = new System.Drawing.Point(12, 6);
-            this.apiKeyValidationLabel.Name = "apiKeyValidationLabel";
-            this.apiKeyValidationLabel.Size = new System.Drawing.Size(67, 23);
-            this.apiKeyValidationLabel.TabIndex = 1;
-            this.apiKeyValidationLabel.Text = "Api key";
-            this.apiKeyValidationLabel.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-            // 
-            // apiKeyValidationButton
-            // 
-            this.apiKeyValidationButton.Location = new System.Drawing.Point(245, 8);
-            this.apiKeyValidationButton.Margin = new System.Windows.Forms.Padding(0);
-            this.apiKeyValidationButton.Name = "apiKeyValidationButton";
-            this.apiKeyValidationButton.Size = new System.Drawing.Size(98, 23);
-            this.apiKeyValidationButton.TabIndex = 2;
-            this.apiKeyValidationButton.Text = "Check Key";
-            this.apiKeyValidationButton.UseVisualStyleBackColor = true;
-            this.apiKeyValidationButton.Click += new System.EventHandler(this.apiKeyValidationButton_Click);
+            this.startApplicationButton.Location = new System.Drawing.Point(184, 9);
+            this.startApplicationButton.Margin = new System.Windows.Forms.Padding(0);
+            this.startApplicationButton.Name = "startApplicationButton";
+            this.startApplicationButton.Size = new System.Drawing.Size(98, 23);
+            this.startApplicationButton.TabIndex = 2;
+            this.startApplicationButton.Text = "Start Application";
+            this.startApplicationButton.UseVisualStyleBackColor = true;
+            this.startApplicationButton.Click += new System.EventHandler(this.apiKeyValidationButton_Click);
             // 
             // apiKeyValidationInfo
             // 
-            this.apiKeyValidationInfo.Location = new System.Drawing.Point(115, 38);
+            this.apiKeyValidationInfo.Location = new System.Drawing.Point(151, 37);
             this.apiKeyValidationInfo.Name = "apiKeyValidationInfo";
             this.apiKeyValidationInfo.Size = new System.Drawing.Size(157, 17);
             this.apiKeyValidationInfo.TabIndex = 3;
@@ -307,9 +287,7 @@
             this.ClientSize = new System.Drawing.Size(489, 473);
             this.Controls.Add(this.controlsPanel);
             this.Controls.Add(this.apiKeyValidationInfo);
-            this.Controls.Add(this.apiKeyValidationButton);
-            this.Controls.Add(this.apiKeyValidationLabel);
-            this.Controls.Add(this.apiKeyValidationInput);
+            this.Controls.Add(this.startApplicationButton);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.MaximumSize = new System.Drawing.Size(505, 512);
             this.MinimumSize = new System.Drawing.Size(505, 512);
@@ -321,15 +299,11 @@
             ((System.ComponentModel.ISupportInitialize)(this.convertFromAmountInput)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.ratesDataGridView)).EndInit();
             this.ResumeLayout(false);
-            this.PerformLayout();
 
         }
 
         #endregion
-
-        private System.Windows.Forms.TextBox apiKeyValidationInput;
-        private System.Windows.Forms.Label apiKeyValidationLabel;
-        private System.Windows.Forms.Button apiKeyValidationButton;
+        private System.Windows.Forms.Button startApplicationButton;
         private System.Windows.Forms.Label apiKeyValidationInfo;
         private System.Windows.Forms.Panel controlsPanel;
         private System.Windows.Forms.ComboBox currentCurrencySelectDropdown;

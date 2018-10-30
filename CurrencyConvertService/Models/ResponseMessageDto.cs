@@ -3,9 +3,6 @@ using System.Collections.Generic;
 
 namespace CurrencyConvertService.Models
 {
-    /// <summary>
-    /// DTO For the full message sent back from the API
-    /// </summary>
     public class ResponseMessageDto
     {
         public bool Success { get; set; }

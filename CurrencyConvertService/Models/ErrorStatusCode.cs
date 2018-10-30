@@ -1,6 +1,4 @@
-﻿
-
-namespace CurrencyConvertService.Models
+﻿namespace CurrencyConvertService.Models
 {
     public class ErrorStatusCode
     {

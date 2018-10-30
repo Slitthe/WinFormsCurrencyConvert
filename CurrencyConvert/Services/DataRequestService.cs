@@ -7,8 +7,10 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using CurrencyConvert.Models;
 using Newtonsoft.Json;
+using CurrencyConvertService;
+using CurrencyConvertService.Helpers;
+using CurrencyConvertService.Models;
 
 namespace CurrencyConvert.Services
 {
@@ -16,39 +18,37 @@ namespace CurrencyConvert.Services
     {
         private static readonly HttpClient Client = new HttpClient();
 
-        public static async Task<ResponseMessageDto> GetTypesDataListAsync(string apiKey)
+
+
+        public static async Task<ResponseMessageDto> GetSymbolsAsync()
         {
-            Uri checkKeyUrl = new UriBuilder($"http://data.fixer.io/api/symbols?access_key={apiKey}").Uri;
-            // Uri checkKeyUrl = new UriBuilder($"http://localhost:3000/delay").Uri;
-            await Task.Delay(5000).ConfigureAwait(true);
-            ResponseMessageDto checkKeyUrlRequest = await RequestDataAsync(checkKeyUrl);
+            Uri symbolsUrl = ApiUrlConstructors.GetSymbolsUrl();
+            
+            ResponseMessageDto checkKeyUrlRequest = await RequestDataAsync(symbolsUrl);
 
             if (checkKeyUrlRequest == null || !checkKeyUrlRequest.Success)
             {
-                return null;
+                throw new HttpRequestException("The symbols data cannot be found. Please check the API url and key for its validity.");
             }
 
             return checkKeyUrlRequest;
         }
 
-        public static async Task<ResponseMessageDto> GetRatesAsync(string apiKey)
+        public static async Task<ResponseMessageDto> GetRatesAsync()
         {
-            Uri getRatesUrl = new UriBuilder($"http://data.fixer.io/api/latest?access_key={apiKey}").Uri;
-            // Uri getRatesUrl = new UriBuilder($"http://data.fixer.io/api/latest?access_key=099344cfbf5f7e75c5848a08f5cfa030").Uri;
-            await Task.Delay(5000).ConfigureAwait(true);
+            Uri ratesUrl = ApiUrlConstructors.GetRatesUrl();
+            
+            ResponseMessageDto getRatesResponse = await RequestDataAsync(ratesUrl);
 
-            ResponseMessageDto getRatesResponse = await RequestDataAsync(getRatesUrl);
-
-            if (getRatesResponse.Rates == null)
+            if (getRatesResponse?.Rates == null)
             {
-                return null;
+                throw new HttpRequestException("The rates data cannot be found. Please check the API url and key for its validity.");
             }
 
             return getRatesResponse;
-
         }
 
-        public static async Task<ResponseMessageDto>  RequestDataAsync(Uri url)
+        private static async Task<ResponseMessageDto> RequestDataAsync(Uri url)
         {
             Cursor.Current = Cursors.WaitCursor;
             ResponseMessageDto deserializedResponse;

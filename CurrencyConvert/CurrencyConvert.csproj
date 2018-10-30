@@ -59,13 +59,8 @@
     <Compile Include="Form1.Designer.cs">
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
-    <Compile Include="Data\CurrencyData.cs" />
-    <Compile Include="Models\ErrorStatusCode.cs" />
-    <Compile Include="Models\ResponseMessageDto.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Services\ApiUrlConstructors.cs" />
-    <Compile Include="Services\DataRequestService.cs" />
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>
     </EmbeddedResource>
@@ -93,8 +88,11 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <WCFMetadata Include="Connected Services\" />
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\CurrencyConvertService\CurrencyConvertService.csproj">
-      <Project>{ef7a4c1c-7e57-4133-bef9-36545549e5a8}</Project>
+      <Project>{b46b5921-381a-4797-9a2e-2d92671934f5}</Project>
       <Name>CurrencyConvertService</Name>
     </ProjectReference>
   </ItemGroup>
