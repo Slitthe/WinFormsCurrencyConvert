@@ -15,7 +15,7 @@ namespace CurrencyConvertService.Services
         {
                 _apiUrlConstructors = new ApiUrlConstructors();
         }
-
+        
 
         public async Task<ResponseMessageDto> GetSymbolsAsync()
         {
@@ -52,7 +52,7 @@ namespace CurrencyConvertService.Services
 
             try
             {
-                HttpResponseMessage responseMessage = await httpClient.GetAsync(url);
+                 HttpResponseMessage responseMessage = await httpClient.GetAsync(url);
                 string responseString = await responseMessage.Content.ReadAsStringAsync();
 
                 deserializedResponse = JsonConvert.DeserializeObject<ResponseMessageDto>(responseString);

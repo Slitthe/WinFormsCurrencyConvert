@@ -245,7 +245,7 @@ namespace CurrencyConvert
                 ConvertCurrencyList[i] = currentRate;
             }
         }
-        
+
 
     }
 }

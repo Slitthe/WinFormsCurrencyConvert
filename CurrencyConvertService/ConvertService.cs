@@ -57,6 +57,21 @@ namespace CurrencyConvertService
             }
         }
 
+        public Dictionary<string, float> GetCurrenciesRatesByBaseCurrency()
+        {
+            var currenciesRatesAdjustedToBase = new Dictionary<string, float>();
+            var baseCurrency = _currencyConvertData.BaseCurrency;
+
+            foreach (var currencyCode in _currencyConvertData.CurrenciesCodeToLongName.Keys)
+            {
+                var currencyConvertedAmount =
+                    _currencyConvertCalculator.ConvertCurrencyAmount(baseCurrency, currencyCode, 1);
+                currenciesRatesAdjustedToBase.Add(currencyCode, currencyConvertedAmount);
+            }
+
+            return currenciesRatesAdjustedToBase;
+        }
+
 
         public async Task<bool> InitializeServiceAttempt()
         {

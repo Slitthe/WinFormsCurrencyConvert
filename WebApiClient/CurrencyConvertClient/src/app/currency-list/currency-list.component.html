@@ -1,0 +1,36 @@
+<label >
+   Base currency:
+   <select (input)="this.changeBaseCurrency($event)" name="currencies">
+      <option 
+         *ngFor="let key of this.getCurrenciesListKeys()"
+         value="{{ key }}"
+         [attr.selected]="this.baseCurrency == key ? 'checked' : null"
+      >
+         {{ currenciesList[ key ] }}
+      </option>
+   </select>
+
+   <button (click)="this.getRatesByBaseCurrency()">GET RATES</button>
+
+   <table>
+      <thead>
+         <th>
+            Code
+         </th>
+         <th>
+            Rate
+         </th>
+      </thead>
+      <tbody>
+         <tr *ngFor="let currencyCode of this.getCurrenciesRatesKeys()">
+            <td>
+               {{currencyCode}}
+            </td>
+            <td>
+               {{this.currenciesRates[currencyCode]}}
+            </td>
+         </tr>
+      </tbody>
+   </table>
+   
+</label>

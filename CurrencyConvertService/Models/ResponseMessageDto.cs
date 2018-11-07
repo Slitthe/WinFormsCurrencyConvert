@@ -11,6 +11,7 @@ namespace CurrencyConvertService.Models
         public Dictionary<string, string> Symbols { get; set; }
 
         public DateTime Date { get; set; }
+
         public string Base { get; set; }
     }
 }

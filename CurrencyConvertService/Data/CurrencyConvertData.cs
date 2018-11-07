@@ -11,9 +11,8 @@ namespace CurrencyConvertService.Data
     public class CurrencyConvertData
     {
         public readonly Dictionary<string, string> CurrenciesCodeToLongName;
-
-
         private const string DefaultBaseCurrency = "EUR";
+
         public string BaseCurrency { get; private set; }
 
         public CurrencyConvertData(Dictionary<string, string> currenciesLongNamesToCode)
@@ -21,6 +20,7 @@ namespace CurrencyConvertService.Data
             CurrenciesCodeToLongName = currenciesLongNamesToCode;
             BaseCurrency = DefaultBaseCurrency;
         }
+
         public CurrencyConvertData(Dictionary<string, string> currenciesLongNamesToCode, string baseCurrency)
         {
             CurrenciesCodeToLongName = currenciesLongNamesToCode;
@@ -30,9 +30,7 @@ namespace CurrencyConvertService.Data
         public void SetBaseCurrency(string newBaseCurrency)
         {
             if (newBaseCurrency.Length != 3)
-            {
                 throw new ArgumentException("Currencies codes can only be 3 characters long.");
-            }
 
             BaseCurrency = newBaseCurrency;
         }
@@ -40,9 +38,12 @@ namespace CurrencyConvertService.Data
 
         public string CurrencyCodeToLongName(string code)
         {
-            var returnVal = CurrenciesCodeToLongName[code];
+            string returnVal = CurrenciesCodeToLongName[code];
             return returnVal;
         }
+
+
+
         public string CurrencyLongNameToCode(string longName)
         {
             string returnVal = CurrenciesCodeToLongName.Single(item => item.Value == longName).Key;
