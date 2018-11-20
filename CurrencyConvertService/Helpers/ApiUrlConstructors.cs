@@ -8,7 +8,7 @@ namespace CurrencyConvertService.Helpers
     internal class ApiUrlConstructors
     {
         private readonly Uri _baseApi = new Uri("http://data.fixer.io/api/");
-        private readonly string _apiKey = "099344cfbf5f7e75c5848a08f5cfa030";
+        private readonly string _apiKey = "4880545fa214bbbaa5e90d1e6a5048a4";
         private readonly string _apiKeyQueryName = "access_key";
 
         public Uri GetSymbolsUrl()

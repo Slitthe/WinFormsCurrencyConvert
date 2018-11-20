@@ -7,8 +7,8 @@ export class DataRequestService {
    private getConvertCurrencyUrl(fromCurrency: string, toCurrency: string, convertAmount: number): string {
       return `http://localhost:56421/api/currencyConvert/convertAmount?baseCurrency=${fromCurrency}&targetCurrency=${toCurrency}&convertAmount=${convertAmount}`;
    }
-   private getAdjustedCurrencyRatesUrl(baseCurrency: string): string {
-      return `http://localhost:56421/api/currencyConvert/rates?&baseCurrency=${baseCurrency}`;
+   private getAdjustedCurrencyRatesUrl(baseCurrency: string, skipAmount: number, takeAmount: number): string {
+      return `http://localhost:56421/api/currencyConvert/rates?&baseCurrency=${baseCurrency}&takeAmount=${takeAmount}&skipAmount=${skipAmount}`;
    }
 
    constructor(private http: HttpClient) { }
@@ -25,9 +25,9 @@ export class DataRequestService {
       );
    }
 
-   public getAdjustedCurrencyRates(baseCurrency: string) {
+   public getAdjustedCurrencyRates(baseCurrency: string, skipAmount: number, takeAmount: number) {
       return this.http.get(
-         this.getAdjustedCurrencyRatesUrl(baseCurrency)
+         this.getAdjustedCurrencyRatesUrl(baseCurrency, skipAmount, takeAmount)
       );
    }
 

@@ -9,16 +9,16 @@ import { DataRequestService } from './data-request.service';
 
 
 @NgModule({
-  declarations: [
-    AppComponent,
-    CurrencyConvertMainComponent,
-    CurrencyListComponent
-  ],
-  imports: [
-    BrowserModule,
-    HttpClientModule
-  ],
+   declarations: [
+      AppComponent,
+      CurrencyConvertMainComponent,
+      CurrencyListComponent
+   ],
+   imports: [
+      BrowserModule,
+      HttpClientModule
+   ],
    providers: [DataRequestService],
-  bootstrap: [AppComponent]
+   bootstrap: [AppComponent]
 })
 export class AppModule { }

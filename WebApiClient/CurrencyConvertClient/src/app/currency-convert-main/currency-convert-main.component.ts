@@ -1,5 +1,5 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { variable } from '@angular/compiler/src/output/output_ast';
+// import { variable } from '@angular/compiler/src/output/output_ast';
 import { DataRequestService } from '../data-request.service';
 
 @Component({
@@ -23,14 +23,14 @@ export class CurrencyConvertMainComponent implements OnInit {
    constructor(private dataRequestService: DataRequestService) {
    }
 
-   private getCurrenciesDictionary() {
-      this.dataRequestService.getCurrencyCodesToLongNames().subscribe(currenciesList => {
-         this.currenciesList = currenciesList;
-         const currencyKeys: string[] = Object.keys(currenciesList);
-         this.convertFromCurrency = this.currenciesList[currencyKeys[0]];
-         this.convertToCurrency = this.currenciesList[currencyKeys[0]];
-      });
-   }
+   // private getCurrenciesDictionary() {
+   //    this.dataRequestService.getCurrencyCodesToLongNames().subscribe(currenciesList => {
+   //       this.currenciesList = currenciesList;
+   //       const currencyKeys: string[] = Object.keys(currenciesList);
+   //       this.convertFromCurrency = this.currenciesList[currencyKeys[0]];
+   //       this.convertToCurrency = this.currenciesList[currencyKeys[0]];
+   //    });
+   // }
 
    ngOnInit() {
       // this.getCurrenciesDictionary();
@@ -50,9 +50,6 @@ export class CurrencyConvertMainComponent implements OnInit {
    }
 
    inputValueChangeHandler(e: any): void {
-      // if (e.value < 0) {
-      //    e.preventDefault();
-      // }
       const newValue = e.target.value;
       this.convertFromAmount = newValue;
    }

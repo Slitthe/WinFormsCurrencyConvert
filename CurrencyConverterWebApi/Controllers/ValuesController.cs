@@ -55,20 +55,27 @@ namespace CurrencyConverterWebApi.Controllers
         }
 
 
+        // make this accept a location and number of items per "page" amount in order to be able to implement the pagination for the currencies list
         [HttpGet("rates")]
         public async Task<ActionResult<IDictionary<string, float> > > GetCurrenciesRates(
-            [FromQuery(Name = "baseCurrency")] string baseCurrency)
+            [FromQuery(Name = "baseCurrency")] string baseCurrency,
+            [FromQuery(Name = "takeAmount")] int takeAmount,
+            [FromQuery(Name = "skipAmount")] int skipAmount
+            )
         {
-            
+
             var convertService = await GetConvertService();
             convertService.ConvertData.SetBaseCurrency(baseCurrency);
 
-            var currenciesRates = convertService.GetCurrenciesRatesByBaseCurrency();
+            Dictionary<string, float> currenciesRates = convertService.GetCurrenciesRatesByBaseCurrency();
+            currenciesRates = currenciesRates.Skip(skipAmount).Take(takeAmount).ToDictionary(item => item.Key, item => item.Value);
 
             // TODO: pass the base currency to the method insteaof chaning the state (by passing the base currecny to the method)
-            //var currenciesRates = convertService.GetCurrenciesRatesByBaseCurrency(baseCurrency);
-
-            return currenciesRates;
+            if (currenciesRates.Count == 0)
+            {
+                return NoContent();
+            }
+            return Ok(currenciesRates);
         }
 
 
