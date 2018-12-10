@@ -1,47 +1,47 @@
 <div>
-   <label class="space-y d-block">
-      Convert from 
-      <select name="currencies" (change)="fromCurrencyChange($event)" value="{{convertFromCurrency}}">
-         <option 
-            *ngFor="let key of getCurrenciesListKeys()" 
-            value="{{key}}"
-            [attr.selected]="this.convertFromCurrency == key ? 'checked' : null"
-         >
-            {{ currenciesList[key] }}
-         </option>
-      </select>
-   </label>
+<div class="input-group mb-3">
+  <div class="input-group-prepend">
+    <label class="input-group-text" for="inputGroupSelect01">Convert From</label>
+  </div>
+
+  <select class="custom-select" name="currencies" (change)="fromCurrencyChange($event)" value="{{convertFromCurrency}}">
+    <option *ngFor="let key of getCurrenciesListKeys()" value="{{key}}" [attr.selected]="this.convertFromCurrency == key ? 'checked' : null">
+      {{ currenciesList[key] }}
+    </option>
+  </select>
+</div>
+
+<div class="input-group mb-3">
+  <div class="input-group-prepend">
+    <label class="input-group-text" for="inputGroupSelect01">Convert From</label>
+  </div>
+
+
+<select class="custom-select"  name="currencies" (change)="toCurrencyChange($event)" value="{{convertToCurrency}}">
+  <option *ngFor="let key of getCurrenciesListKeys()" value="{{key}}" [attr.selected]="this.convertToCurrency == key ? 'checked' : null">
+    {{ currenciesList[key] }}
+  </option>
+</select>
+</div>
    
-   
-   <label class="space-y d-block">
-      Convert from
-      <select name="currencies" (change)="toCurrencyChange($event)" value="{{convertToCurrency}}">
-         <option 
-            *ngFor="let key of getCurrenciesListKeys()" 
-            value="{{key}}"
-            [attr.selected]="this.convertToCurrency == key ? 'checked' : null"
-         >
-            {{ currenciesList[key] }} 
-         </option>
-      </select>
-   </label>
+
+<div class="input-group mb-3">
+  <div class="input-group-prepend">
+    <label class="input-group-text" for="inputGroupSelect01">Convert Amount:</label>
+  </div>
 
 
+<input type='number' min='0' minvalue='0' (input)="this.inputValueChangeHandler($event)" value="1">
+</div>
 
-   <label class="space-y d-block">Convert Amount: 
-      <input 
-         type='number' 
-         min='0' 
-         minvalue='0' 
-         (input)="this.inputValueChangeHandler($event)" value="1">
-   </label>
+
 
    <div class="space-y display-result">
       {{ displayResultText }}
    </div>
 
-   <button class="btn btn-primary space-y space-x" (click)="getConvertData()">CONVERT</button>
-   <button class="btn btn-primary space-y space-x" (click)="switchCurrencies()">SWITCH</button>
+   <button class="bspace-y space-x" (click)="getConvertData()">CONVERT</button>
+   <button class="bspace-y space-x" (click)="switchCurrencies()">SWITCH</button>
    
    
 </div>

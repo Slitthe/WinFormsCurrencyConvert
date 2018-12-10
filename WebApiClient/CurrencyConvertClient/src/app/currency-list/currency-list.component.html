@@ -2,18 +2,24 @@
   <div class="spinner" [ngClass]="{'lds-dual-ring': this.isLoading && !this.isCurrencyRatesListFull}"></div>
 </div>
 
-<label>
-  Base currency:
-  <select (input)="this.changeBaseCurrency($event)" name="currencies">
-    <option *ngFor="let key of this.getCurrenciesListKeys()" value="{{ key }}" [attr.selected]="this.baseCurrency == key ? 'checked' : null">
-      {{ currenciesList[ key ] }}
-    </option>
-  </select>
-</label>
+
+<div class="container">
+	<div class="input-group mb-3">
+		<div class="input-group-prepend">
+			<button class="btn btn-primary" (click)="this.initialCurrencyListLoading()">GET RATES</button>
+		</div>
+		<select class="custom-select" id="inputGroupSelect01" (input)="this.changeBaseCurrency($event)" name="currencies">
+		<option *ngFor="let key of this.getCurrenciesListKeys()" value="{{ key }}" [attr.selected]="this.baseCurrency == key ? 'checked' : null">
+			{{ currenciesList[ key ] }}
+		</option>
+		</select>
+	</div>
+
+</div>
+
 
 
 <!-- <button (click)="this.loadMoreRates()">LOAD MORE</button> -->
-<button class="btn btn-primary" (click)="this.initialCurrencyListLoading()">GET RATES</button>
 <div class="container">
   <table id="currency-list-table" border="0" class="table table-striped" [ngClass]="{'loading': this.isLoading, 'not-loading': !this.isLoading, 'is-over': this.isCurrencyRatesListFull}">
     <thead class="thread-dark">

@@ -186,7 +186,8 @@ export class CurrencyListComponent implements OnInit, OnDestroy {
       for (const currencyName in newRatesToAppend) {
          if (newRatesToAppend.hasOwnProperty(currencyName)) {
             const currencyValue = newRatesToAppend[currencyName];
-            this.currenciesRates[currencyName] = currencyValue;
+            const truncatedValue: number = Number.parseFloat(currencyValue.toFixed(3));
+            this.currenciesRates[currencyName] = truncatedValue;
          }
       }
    }
