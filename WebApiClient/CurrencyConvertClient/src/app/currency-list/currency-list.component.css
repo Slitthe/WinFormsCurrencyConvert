@@ -1,8 +1,17 @@
-table {
+/* table {
    width: 50%;
    margin: 0 auto;
-}
+} */
 
+.cover-screen {
+   background: rgba(0, 0, 0, 0.2);
+   position: fixed;
+   top: 0;
+   bottom: 0;
+   right: 0;
+   left: 0;
+}
+/* 
 table td {
    border: 1px solid rgba(0, 0, 0, 0.2);
 }
@@ -17,4 +26,65 @@ table td:nth-child(2) {
    color: black;
    font-family: monospace;
    font-size: 1.2em;
+} */
+
+/* #currency-list-table {
+   border-spacing: 0;
+   border-collapse: collapse;
+}
+
+#currency-list-table tbody tr td,
+#currency-list-table thead th
+{
+   height: 21px;
+   padding: 5px;
+   border: 1px solid rgba(0, 0, 0, 0.2);
+}
+
+
+#currency-list-table.loading {
+   background-color: blue;
+}
+
+#currency-list-table.not-loading {
+   background-color: yellow;
+}
+#currency-list-table.is-over {
+   background-color: green;
+} */
+
+
+.lds-dual-ring {
+  display: inline-block;
+  width: 64px;
+  height: 64px;
+}
+
+.lds-dual-ring:after {
+  content: " ";
+  display: block;
+  width: 46px;
+  height: 46px;
+  margin: 1px;
+  border-radius: 50%;
+  border: 5px solid white;
+  border-color: white transparent black transparent;
+  animation: lds-dual-ring 1.2s linear infinite;
+}
+
+@keyframes lds-dual-ring {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.spinner {
+   position: absolute;
+   left: 50%;
+   top: 50%;
+   transform: translate(-50%, -50%);
 }

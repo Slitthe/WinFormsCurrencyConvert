@@ -3,12 +3,13 @@ import { HttpClient } from '@angular/common/http';
 
 @Injectable()
 export class DataRequestService {
-   private currencyCodesToLongNamesUrl: string = 'http://localhost:56421/api/currencyConvert/currencyCodesToLongName';
+   private baseApi: string = 'http://localhost:56421';
+   private currencyCodesToLongNamesUrl: string = `${this.baseApi}/api/currencyConvert/currencyCodesToLongName`;
    private getConvertCurrencyUrl(fromCurrency: string, toCurrency: string, convertAmount: number): string {
-      return `http://localhost:56421/api/currencyConvert/convertAmount?baseCurrency=${fromCurrency}&targetCurrency=${toCurrency}&convertAmount=${convertAmount}`;
+      return `${this.baseApi}/api/currencyConvert/convertAmount?baseCurrency=${fromCurrency}&targetCurrency=${toCurrency}&convertAmount=${convertAmount}`;
    }
    private getAdjustedCurrencyRatesUrl(baseCurrency: string, skipAmount: number, takeAmount: number): string {
-      return `http://localhost:56421/api/currencyConvert/rates?&baseCurrency=${baseCurrency}&takeAmount=${takeAmount}&skipAmount=${skipAmount}`;
+      return `${this.baseApi}/api/currencyConvert/rates?&baseCurrency=${baseCurrency}&takeAmount=${takeAmount}&skipAmount=${skipAmount}`;
    }
 
    constructor(private http: HttpClient) { }

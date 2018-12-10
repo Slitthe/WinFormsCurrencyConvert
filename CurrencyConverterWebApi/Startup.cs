@@ -41,9 +41,13 @@ namespace CurrencyConverterWebApi
             {
                 app.UseDeveloperExceptionPage();
             }
-            
+            //TODO: Maybe add caching to the APi so the API is not just a redirection
             app.UseCors("standardCors");
             app.UseMvc();
+            //TODO: Chain of responsabilities design pattern principle (look at)
+            //TODO: Template method design pattern (?)
+
+            //TODO: DESIGN patterns and suggestions of presentation for presentation
         }
     }
 }
